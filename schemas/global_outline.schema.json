@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GlobalOutline",
+  "type": "object",
+  "required": [
+    "scenario_type",
+    "target_role",
+    "total_sessions",
+    "total_turns",
+    "overall_arc",
+    "stages"
+  ],
+  "properties": {
+    "scenario_type": {
+      "type": "string"
+    },
+    "target_role": {
+      "type": "string"
+    },
+    "total_sessions": {
+      "type": "integer"
+    },
+    "total_turns": {
+      "type": "integer"
+    },
+    "overall_arc": {
+      "type": "string"
+    },
+    "closure_profile": {
+      "type": "string"
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "stage_id",
+          "stage_name",
+          "session_span",
+          "goal",
+          "relationship_state",
+          "emotional_background",
+          "key_function"
+        ],
+        "properties": {
+          "stage_id": {
+            "type": "string"
+          },
+          "stage_name": {
+            "type": "string"
+          },
+          "session_span": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "goal": {
+            "type": "string"
+          },
+          "relationship_state": {
+            "type": "string"
+          },
+          "emotional_background": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "key_function": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EventPlan",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "event_id",
+      "session_id",
+      "event_type",
+      "description",
+      "emotional_significance",
+      "relation_impact",
+      "can_be_critical_memory",
+      "can_be_distractor"
+    ],
+    "properties": {
+      "event_id": {
+        "type": "string"
+      },
+      "session_id": {
+        "type": "string"
+      },
+      "event_type": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "emotional_significance": {
+        "type": "string"
+      },
+      "relation_impact": {
+        "type": "string"
+      },
+      "can_be_critical_memory": {
+        "type": "boolean"
+      },
+      "can_be_distractor": {
+        "type": "boolean"
+      },
+      "interaction_targets": {
+        "type": "object",
+        "properties": {
+          "teacher_move_target": {
+            "type": "string"
+          },
+          "student_response_target": {
+            "type": "string"
+          },
+          "must_include_signals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "avoid_signals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "anchoring_topics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

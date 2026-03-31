@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QuestionPointPlan",
+  "type": "object",
+  "properties": {
+    "mvp_question_count": {
+      "type": "integer"
+    },
+    "content_distribution": {
+      "type": "object"
+    },
+    "memory_level_distribution": {
+      "type": "object"
+    },
+    "format_distribution": {
+      "type": "object"
+    },
+    "reasoning_distribution": {
+      "type": "object"
+    },
+    "adversarial_count": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": true
+}

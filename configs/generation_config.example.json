@@ -1,0 +1,37 @@
+{
+  "batch_name": "demo_batch",
+  "dataset_count": 1,
+  "llm": {
+    "provider": "gateway",
+    "model": "@gemini/gemini-2.5-flash",
+    "base_url": "https://api.portkey.ai/v1",
+    "api_key_env": "GATEWAY_API_KEY"
+  },
+  "scenario_type": "psychological_teacher_student",
+  "prompt_language": "en",
+  "target_role": "student",
+  "sessions_per_conversation": 3,
+  "turns_per_conversation": 48,
+  "stage_count": 3,
+  "question_count": 16,
+  "output_root": "data/generated_batches",
+  "output_naming": {
+    "append_timestamp": true,
+    "timestamp_format": "%Y%m%d_%H%M%S"
+  },
+  "persona_selection": {
+    "mode": "random_seeded",
+    "seed": 36
+  },
+  "blueprint_generation": {
+    "enable_repair": true,
+    "max_repair_attempts": 1,
+    "fixed_events_per_session": 3
+  },
+  "conversation_generation": {
+    "mode": "multi_agent",
+    "framework": "autogen",
+    "temperature": 0.2,
+    "max_turn_retries": 2
+}
+}

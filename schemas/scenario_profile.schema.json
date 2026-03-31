@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScenarioProfile",
+  "type": "object",
+  "required": [
+    "scenario_type",
+    "agent_role",
+    "user_role",
+    "target_role",
+    "mvp_scale"
+  ],
+  "properties": {
+    "scenario_type": {
+      "type": "string"
+    },
+    "agent_role": {
+      "type": "string"
+    },
+    "user_role": {
+      "type": "string"
+    },
+    "target_role": {
+      "type": "string"
+    },
+    "mvp_scale": {
+      "type": "object",
+      "required": [
+        "sessions",
+        "turns",
+        "stages"
+      ],
+      "properties": {
+        "sessions": {
+          "type": "integer"
+        },
+        "turns": {
+          "type": "integer"
+        },
+        "stages": {
+          "type": "integer"
+        }
+      }
+    },
+    "design_focus": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

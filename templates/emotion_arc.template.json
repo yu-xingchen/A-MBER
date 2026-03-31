@@ -1,0 +1,16 @@
+[
+  {
+    "stage_id": "stage_1",
+    "student_dominant_emotions": ["anxiety", "suppressed_stress"],
+    "implicit_emotions_to_seed": ["suppressed_helplessness"],
+    "relation_state": "support_building",
+    "change_from_previous": null
+  },
+  {
+    "stage_id": "stage_2",
+    "student_dominant_emotions": ["grievance", "defensiveness", "partial_relief"],
+    "implicit_emotions_to_seed": ["disappointment", "distancing"],
+    "relation_state": "mild_tension_with_partial_repair",
+    "change_from_previous": "from cautious trust to feeling misunderstood, then partial re-engagement"
+  }
+]

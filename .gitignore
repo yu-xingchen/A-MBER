@@ -1,0 +1,23 @@
+# 环境与IDE
+.env
+.idea/
+__pycache__/
+
+# 生成结果数据（只保留pipeline框架，不上传生成产物）
+data/
+
+# TTS语音相关脚本
+scripts/tts_*.py
+
+# langfuse实验运行日志/报告（结果，非框架）
+docs/langfuse_session_local_*.txt
+docs/langfuse_blueprint_review_*.txt
+docs/langfuse_mini_*.txt
+docs/langfuse_exports/
+
+# 过程checkpoint和备份文件
+pipeline.checkpoint_*.py
+docs/question_generation_checkpoint_*.txt
+docs/benchmark_iteration_log_*.md
+prompts/*.checkpoint_*.j2
+prompts/*.bak

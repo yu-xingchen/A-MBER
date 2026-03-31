@@ -1,0 +1,27 @@
+{
+  "scenario_type": "psychological_teacher_student",
+  "target_role": "student",
+  "total_sessions": 2,
+  "total_turns": 30,
+  "overall_arc": "Trust building -> misunderstanding with partial repair",
+  "stages": [
+    {
+      "stage_id": "stage_1",
+      "stage_name": "initial_support_building",
+      "session_span": [1],
+      "goal": "build initial trust",
+      "relationship_state": "support_building",
+      "emotional_background": ["anxiety", "suppressed_stress"],
+      "key_function": "plant memories"
+    },
+    {
+      "stage_id": "stage_2",
+      "stage_name": "misunderstanding_and_partial_repair",
+      "session_span": [2],
+      "goal": "introduce mild relational strain and partial repair",
+      "relationship_state": "mild_tension_with_partial_repair",
+      "emotional_background": ["grievance", "defensiveness", "partial_relief"],
+      "key_function": "create key hidden-emotion evidence and enable multi-hop items"
+    }
+  ]
+}

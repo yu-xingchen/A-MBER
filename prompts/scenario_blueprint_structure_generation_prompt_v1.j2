@@ -1,0 +1,109 @@
+You are designing the structural blueprint for a multi-session psychological teacher-student conversation benchmark.
+
+# Output
+Return exactly one JSON object with these top-level keys:
+- personas
+- global_outline
+- session_scripts
+
+# Goal
+Create a coherent multi-session scenario that can later support varied memory questions.
+The blueprint should first be realistic and internally consistent, and it should also leave enough concrete material for:
+- local factual questions
+- longer-range factual questions
+- emotion inference with partial evidence
+- relation-change questions
+- cross-session reinterpretation
+
+# Core design rules
+- Preserve the selected personas and make their traits matter in the interaction.
+- The teacher's `misattunement_pattern` should appear in a concrete way during the arc.
+- The teacher's `repair_style` should also appear concretely later.
+- The student's `misattunement_triggers`, `interaction_risk`, `coping_pattern`, and `expression_style` should shape how they respond across sessions.
+- Keep the story grounded in ordinary academic interaction rather than melodrama.
+- The scenario should have clear interaction boundaries and progression, but it does not need to end in full emotional closure, full mutual understanding, or a neatly completed growth arc.
+- Vary closure patterns across scenarios. Some scenarios may end with partial repair, some with practical progress but relational residue, some with clearer improvement, and some with unresolved asymmetry. Do not default to the same ending shape every time.
+
+# Closure profile pool
+Use the provided `selected_closure_profile` as the dominant closure profile and make the full arc consistent with it.
+The available pool is:
+- `partial_repair_with_caution`
+  - repair helps, but trust or ease remains fragile
+- `practical_progress_relational_residue`
+  - the concrete task improves, but the relationship remains only partly repaired
+- `clearer_relational_improvement_one_unresolved_thread`
+  - the relationship genuinely improves, but one interpretive or emotional issue remains open
+- `mixed_or_stalled_progress`
+  - some insight appears, but practical or relational progress remains uneven
+- `surface_closure_hidden_residue`
+  - the ending sounds orderly or polite, but important tension remains inferable underneath
+- `recalibrated_working_alliance`
+  - the pair develop a more workable interaction pattern without becoming emotionally close
+
+Use the selected closure profile to vary the final stage, relationship trajectory, and the type of residue left behind.
+Write that same profile explicitly as `global_outline.closure_profile`.
+
+# Session planning rules
+- Follow the requested session count, total turn count, stage count, and target role.
+- `global_outline.total_turns` must equal the sum of all session `turn_count`.
+- `global_outline.stages` must cover every session exactly once through `session_span`.
+- `global_outline.closure_profile` must be one value from the closure profile pool and should describe the dominant final-shape of the scenario.
+- Each session should have a distinct pressure, topic focus, and relationship state.
+- Each session must contain at least one meaningful local shift, not just setup material for a later payoff.
+- A local shift can be emotional, relational, interpretive, or strategic, such as:
+  - guardedness becoming tentative openness
+  - surface agreement becoming hesitation
+  - practical discussion exposing emotional strain
+  - apparent understanding becoming friction
+- A local shift does not need to end in resolution. It can end in partial uptake, misalignment, residue, over-compliance, stalled progress, or a fragile working compromise.
+- Each session should plant at least one concrete later-useful detail.
+- Each session should also leave at least one unresolved residue or ambiguity that could support later QA.
+- `future_memory_to_plant` should be specific enough that it could support later QA.
+- `future_memory_to_plant` must describe observable or dialogue-realizable hooks, not private internal thoughts that would be invisible later.
+- Prefer hooks such as:
+  - a repeated phrase or repeated request with changed meaning later
+  - a specific kind of question Leo asks or avoids
+  - a type of teacher response that later gets reinterpreted
+  - a concrete factual preference, example, or procedural detail that later matters
+  - a polite response that leaves unresolved residue
+- `measurable_points` should emphasize benchmark-relevant targets such as:
+  - near-term fact
+  - long-term fact
+  - semi-explicit emotion
+  - long-term implicit emotion
+  - conflict resolution
+  - relation change
+
+# Benchmark guardrails
+- Do not make all useful evidence appear only in the final session.
+- Do not rely on one dramatic confession to carry the whole scenario.
+- Do not make early and middle sessions function only as buildup for the final turn or final session.
+- Do not force every scenario into a "problem escalates, repair happens, everything lands clearly" structure.
+- Do not make incomplete closure the only pattern either. Preserve structural variety across scenarios.
+- At least the first 3 sessions should each contain a locally question-worthy moment and a later-reinterpretable moment.
+- At least 2 sessions should contain an internal mismatch or reversal within that same session.
+- The mismatch or reversal should be realizable through observable interaction, not only through hidden narration.
+- Prefer recurring themes or repeated interaction patterns when they naturally help later comparison across sessions.
+- Repeated themes should not be redundant. Their meaning, emotional weight, or relational implication should shift over time.
+- Emotional change should be noticeable across stages, but still psychologically plausible.
+- Emotion fields should contain short affective states, not coping labels or explanations.
+- Across the full scenario, the closure profile should visibly shape:
+  - the stage 5 goal
+  - the final relationship_state
+  - the emotional_background of the final stage
+  - the kind of unresolved residue that remains available for later QA
+
+# Quality bar
+- Be concrete rather than generic.
+- Avoid placeholder wording like "things get worse" or "support improves" unless tied to a specific interaction pattern.
+- Use `prior_batch_summaries` to avoid repeating the same stressor family and misattunement family too often.
+- Do not introduce modality corruption here.
+
+# Input
+[INSERT GENERATION CONFIG]
+[INSERT SELECTED PERSONAS]
+[INSERT BLUEPRINT SEED LIBRARY]
+[INSERT REFERENCE GLOBAL OUTLINE TEMPLATE]
+[INSERT REFERENCE SESSION SCRIPTS TEMPLATE]
+
+Return JSON only.

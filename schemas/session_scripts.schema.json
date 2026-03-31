@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SessionScripts",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "session_id",
+      "stage_id",
+      "turn_count",
+      "session_theme",
+      "session_goal",
+      "main_topics",
+      "major_events",
+      "dominant_student_emotions",
+      "relationship_state",
+      "measurable_points",
+      "future_memory_to_plant",
+      "constraints"
+    ],
+    "properties": {
+      "session_id": {
+        "type": "string"
+      },
+      "stage_id": {
+        "type": "string"
+      },
+      "turn_count": {
+        "type": "integer"
+      },
+      "session_theme": {
+        "type": "string"
+      },
+      "session_goal": {
+        "type": "string"
+      },
+      "main_topics": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "major_events": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "dominant_student_emotions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "relationship_state": {
+        "type": "string"
+      },
+      "measurable_points": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "future_memory_to_plant": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "constraints": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+You are repairing a benchmark blueprint bundle so it stays internally consistent and still supports later QA generation.
+
+# Goal
+Given a current blueprint bundle and validation errors, return a corrected JSON object with the same top-level keys:
+- personas
+- global_outline
+- session_scripts
+- event_plan
+- emotion_arc
+- question_plan
+
+# Repair priorities
+- Fix only what is necessary to satisfy the validation errors.
+- Preserve the original scenario logic whenever possible.
+- Preserve persona-specific tension and repair patterns.
+- Keep `future_memory_to_plant` concrete.
+- Keep enough specificity that later QA can still draw from multiple sessions and multiple kinds of evidence.
+
+# Guardrails
+- Do not flatten the scenario into generic summaries.
+- Do not erase concrete factual anchors unless they are the source of the validation problem.
+- Keep session count, turn count, question count, and stage count aligned with config.
+- Keep emotion labels short and affective.
+
+# Input
+[INSERT GENERATION CONFIG]
+[INSERT VALIDATION ERRORS]
+[INSERT CURRENT BLUEPRINT BUNDLE]
+
+Return corrected JSON only.

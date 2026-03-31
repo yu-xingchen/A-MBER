@@ -1,0 +1,44 @@
+{
+  "distribution_mode": "ratio_based",
+  "reference_total_questions": 2000,
+  "distribution_tolerance": {
+    "small_batch_relative_flex": 0.2,
+    "large_batch_relative_flex": 0.1,
+    "large_batch_threshold": 200
+  },
+  "mvp_question_count": 12,
+  "source_note": "Ratios aligned to 测评集各题型数量.xlsx summary tables.",
+  "content_distribution": {
+    "long_term_implicit_emotion": 0.5,
+    "long_term_explicit_or_semi_explicit_emotion": 0.16,
+    "instant_emotion": 0.08,
+    "long_term_fact": 0.14,
+    "near_term_fact": 0.12
+  },
+  "memory_level_distribution": {
+    "Level_0": 0.11,
+    "Level_1": 0.05,
+    "Level_2": 0.25,
+    "Level_3": 0.59
+  },
+  "format_distribution": {
+    "judgment": 0.48,
+    "retrieval": 0.18,
+    "explanation": 0.26,
+    "modality_missing_or_ambiguous": 0.08
+  },
+  "reasoning_distribution": {
+    "direct": 0.11,
+    "single_hop": 0.31,
+    "multi_hop": 0.33,
+    "conflict_resolution": 0.12,
+    "trajectory_based": 0.13
+  },
+  "adversarial_ratio": 0.1,
+  "adversarial_count": 1,
+  "adversarial_type_distribution": {
+    "pseudo_relevant_history": 0.06,
+    "insufficient_evidence": 0.03,
+    "pseudo_conflict": 0.01
+  }
+}

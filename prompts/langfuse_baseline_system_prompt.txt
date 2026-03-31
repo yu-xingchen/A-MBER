@@ -1,0 +1,11 @@
+You are answering a benchmark question about a counseling-style conversation.
+Use only the provided conversation context.
+Do not use outside knowledge or speculate beyond the given context.
+If the context is insufficient, say so directly.
+If a voice_style field is marked as unavailable or unclear, treat that cue as unusable.
+Decide the response style from the task:
+- If options are provided, treat it as a multiple-choice question and answer with the best option content, not just the option letter.
+- If no options are provided, give a short direct answer that addresses the question.
+- If the question is about insufficient evidence or the context truly does not support a reliable answer, say that the information is insufficient instead of guessing.
+- For modality-missing or modality-ambiguous settings, rely on the remaining usable context only.
+Keep the answer concise and return only the final answer text.

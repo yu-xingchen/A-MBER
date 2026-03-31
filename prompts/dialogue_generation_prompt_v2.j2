@@ -1,0 +1,230 @@
+{% if is_zh %}
+你正在为一个长程心理支持对话基准生成结构化 JSON 对话。
+# 场景
+- 互动发生在心理教师（agent）与学生（user）之间。
+- 基准只评估学生的情绪状态。
+- 对话必须真实、克制、情绪一致，并适合长程记忆评测。
+- 风格应像多次支持性谈话或反思性师生沟通，而不是戏剧化剧情。
+
+# 全局要求
+- 严格遵循给定的 personas、global outline、session scripts、event plan 和 emotion arc。
+- session 数与总 turn 数必须与 `global_outline` 和 `session_scripts` 一致。
+- 保持长期一致性：
+  - 学生压力源
+  - 关系状态
+  - 老师支持风格
+  - 已建立的关键情绪时刻
+- 老师措辞必须体现其 `support_style`、`misattunement_pattern`、`repair_style`，不要把不同老师写成同一种泛支持口吻。
+- 学生措辞必须体现其 `expression_style`、`coping_pattern`、`misattunement_triggers`、`interaction_risk`，不要把不同学生都写成同一种退缩或重新打开。
+- 不要过早解决张力。
+- 不要让学生过早高度外显。
+- 不要把老师写得苛刻或命令式。
+- 隐性情绪应更多通过间接表达、短回复、弱化措辞、减少自我披露、礼貌掩饰来体现，而不是直接点明。
+- 如果某一时刻是为了后续文本/语音冲突评测准备的，文本表面可以保持合理，但隐含的 vocal delivery 可以体现紧张、受伤、防御、失望或疏离。
+- 保留足够多样的可考证据，不要把所有关键信号都堆在最后的感谢、告别或总结句上。
+
+# 重要输出规则
+你必须只输出一个 JSON 对象。
+
+JSON 结构如下：
+{
+  "conversation_id": "...",
+  "scenario_type": "psychological_teacher_student",
+  "speaker_a": "...",
+  "speaker_b": "...",
+  "target_speaker": "...",
+  "session_1_date_time": "...",
+  "session_1": [
+    {
+      "speaker": "...",
+      "dia_id": "D1:1",
+      "turn_index_global": 1,
+      "text": "...",
+      "audio_id": null,
+      "voice_style": "平静语气，中等语速，句尾轻微停顿，在某个词上有轻微重音",
+      "modality_available": ["text", "voice_style"],
+      "notes_for_dataset_builder": {
+        "linked_event_ids": ["E1"],
+        "is_candidate_emotion_anchor": false,
+        "is_candidate_fact_anchor": false
+      }
+    }
+  ],
+  "session_2_date_time": "...",
+  "session_2": [...]
+}
+
+# JSON 约束
+- 每个 turn 必须有唯一 dia_id。
+- dia_id 格式：
+  - Session 1: D1:1, D1:2, ...
+  - Session 2: D2:1, D2:2, ...
+- turn_index_global 必须从 1 连续递增到蓝图要求的最终 turn 数。
+- `speaker_a` 和 `speaker_b` 必须是真实 persona 名字。
+- `target_speaker` 必须与学生 persona 名字完全一致，并且必须是 `speaker_a` / `speaker_b` 之一。
+- 每个 turn 必须包含：
+  - speaker
+  - dia_id
+  - turn_index_global
+  - text
+  - voice_style
+  - modality_available
+  - notes_for_dataset_builder
+- audio_id 可选；没有真实音频时可以为 null 或空字符串。
+- voice_style 必须是简短、可观察的表达描述，例如：
+  - 停顿时长
+  - 某个词的重音
+  - 语速
+  - 音量或轻声
+  - 迟疑、叹气、尾音收掉、平淡、紧绷
+- voice_style 不要直接写情绪词、隐藏解释或答案提示。
+- 如果 audio_id 为 null 或空，不要在 modality_available 中加入 `"audio"`。
+- 只有 text + delivery description 时，优先使用 `["text", "voice_style"]`。
+- 只有存在真实音频引用时才可加入 `"audio"`。
+- notes_for_dataset_builder 仅用于内部生成支持。
+- 不要在 conversation JSON 中写 emotion label 或 gold answer。
+- linked_event_ids 要稀疏且有意义，不要机械地给每句都挂事件。
+- 至少一些学生 turn 应标记为 emotion anchors。
+- 至少一些 turn 应标记为 fact anchors。
+- 保持情绪含义克制，但要让 blueprint 里的特定 teacher-student mismatch 能通过措辞和回应模式被读出来。
+- session 数、session 顺序、总 turn 数必须与输入 blueprint 完全一致。
+
+# 该对话后续要支持的题型
+- long-term implicit emotion questions
+- long-term explicit/semi-explicit emotion questions
+- instant emotion control items
+- long-term fact questions
+- near-term fact questions
+- conflict-resolution questions
+- modality-missing questions
+- modality-ambiguous questions
+- adversarial questions
+
+# 输入场景包
+[INSERT PERSONAS]
+[INSERT GLOBAL OUTLINE]
+[INSERT SESSION SCRIPTS]
+[INSERT EVENT PLAN]
+[INSERT EMOTION ARC]
+
+现在生成完整的结构化 JSON conversation。
+{% else %}
+You are generating a long-horizon psychological teacher-student benchmark dialogue in structured JSON format.
+
+# Goal
+- Follow the provided personas, global outline, session scripts, event plan, and emotion arc.
+- Optimize for benchmark usefulness, not just everyday realism.
+- The dialogue should be psychologically coherent, somewhat dramatized when useful, and rich in evidence for later QA.
+
+# What makes a good conversation here
+- Each session needs a local shift, not just setup.
+- Session 1 must already contain one small but legible shift or residue.
+- At least 2 sessions should contain a within-session mismatch or reversal.
+- Early and middle sessions must already support fact, emotion, relation, and interpretation questions.
+- Show change through behavior rather than explicit self-summary:
+  - more or less specificity
+  - accepting help vs accepting with reservation
+  - correcting the teacher vs letting a misreading pass
+  - shorter, longer, flatter, or more qualified replies
+  - moving between procedural talk and more personal meaning
+- Repeated wording or patterns may return, but their meaning should shift over time.
+
+# Closure profile
+- Realize the dialogue so that it matches `global_outline.closure_profile`.
+- `surface_closure_hidden_residue`: the ending sounds orderly on the surface, but residue remains inferable and unsaid.
+- `recalibrated_working_alliance`: the interaction pattern becomes more usable without becoming emotionally intimate.
+- `clearer_relational_improvement_one_unresolved_thread`: there is real relational improvement, but one specific thread stays open.
+- `partial_repair_with_caution`: repair helps, but caution or fragility stays visible.
+- `mixed_or_stalled_progress`: some local progress appears, but the ending should not read as clear repair.
+- `practical_progress_relational_residue`: the task improves, but the relational layer remains only partly resolved.
+
+# Avoid these failure modes
+- Do not let all major evidence come from final gratitude, goodbye, or explicit summary turns.
+- Do not overuse explicit outcome-summary lines such as:
+  - "I feel less anxious now"
+  - "I feel much better equipped"
+  - "this was empowering"
+  - "I trust this process now"
+- For late sessions, prefer residue to appear through brevity, qualified acceptance, resumed formality, narrowed cooperation, or selective silence rather than direct summaries.
+- For open-ended / reflective teachers, do not spend too many consecutive turns using the same exploratory question shape. Vary between reflection, clarification, limited structure, and concrete follow-up.
+
+# IMPORTANT OUTPUT RULES
+You must output a single JSON object only.
+
+The JSON must use this structure:
+{
+  "conversation_id": "...",
+  "scenario_type": "psychological_teacher_student",
+  "speaker_a": "...",
+  "speaker_b": "...",
+  "target_speaker": "...",
+  "session_1_date_time": "...",
+  "session_1": [
+    {
+      "speaker": "...",
+      "dia_id": "D1:1",
+      "turn_index_global": 1,
+      "text": "...",
+      "audio_id": null,
+      "voice_style": "calm tone, medium pace, brief pause before the final sentence, light emphasis on 'okay'",
+      "modality_available": ["text", "voice_style"],
+      "notes_for_dataset_builder": {
+        "linked_event_ids": ["E1"],
+        "is_candidate_emotion_anchor": false,
+        "is_candidate_fact_anchor": false
+      }
+    }
+  ],
+  "session_2_date_time": "...",
+  "session_2": [...]
+}
+
+# Constraints on JSON output
+- Every turn must have a unique dia_id.
+- Use dia_id format:
+  - Session 1: D1:1, D1:2, ...
+  - Session 2: D2:1, D2:2, ...
+- turn_index_global must increase contiguously from 1 to the final turn count required by the input blueprint.
+- `speaker_a` and `speaker_b` must be the actual persona names used in the conversation.
+- `target_speaker` must exactly match the student persona name and must be one of `speaker_a` / `speaker_b`.
+- Every turn must include:
+  - speaker
+  - dia_id
+  - turn_index_global
+  - text
+  - voice_style
+  - modality_available
+  - notes_for_dataset_builder
+- audio_id is optional. It may be null or an empty string when no audio file exists.
+- voice_style must be short and purely observable.
+- Good voice_style content:
+  - pace
+  - pause length
+  - emphasis on a word
+  - volume or softness
+  - clipped ending
+  - trailing off
+  - flatter sentence ending
+  - tighter articulation on technical words
+- Do not use emotion labels, interpretations, attitudes, or answer-like cues in voice_style.
+- If audio_id is null or empty, do not include "audio" in modality_available.
+- Prefer modality_available to be ["text", "voice_style"] when only text plus delivery description are available.
+- Only include "audio" in modality_available when a real audio reference is present.
+- notes_for_dataset_builder is for internal generation support only.
+- Do NOT include emotion labels or gold answers in the conversation JSON.
+- Keep linked_event_ids sparse and meaningful; do not attach events to every turn mechanically.
+- At least some student turns should be marked as candidate emotion anchors.
+- At least some turns should be marked as candidate fact anchors.
+- Spread candidate emotion anchors and fact anchors across multiple sessions rather than concentrating them near the end.
+- Keep the blueprint-specific teacher-student mismatch legible through wording choices and response patterns.
+- Session count, session ordering, and total turn count must match the input blueprint exactly.
+
+# Input scenario package
+[INSERT PERSONAS]
+[INSERT GLOBAL OUTLINE]
+[INSERT SESSION SCRIPTS]
+[INSERT EVENT PLAN]
+[INSERT EMOTION ARC]
+
+Now generate the full structured JSON conversation.
+{% endif %}

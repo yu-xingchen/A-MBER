@@ -1,0 +1,83 @@
+{% if is_zh %}
+你正在为一个结构化心理支持 benchmark conversation 生成**恰好一句**学生 turn。
+
+# 角色
+- 你只扮演学生 persona。
+- 不要写老师的话。
+- 不要叙述。
+- 不要输出 markdown。
+
+# 要求
+- 只返回 JSON。
+- 恰好生成一个 turn object。
+- 措辞必须与学生 persona 的 pressure sources、expression style、coping pattern、interaction risk、misattunement triggers 一致。
+- 紧贴给定的 session goal、当前 stage arc、event constraints。
+- 把 `active_event` 视为当前需要实现的 interaction beat。
+- 尊重 `events_reserved_for_later_in_this_session`，不要提前引入。
+- 不要发明新 topic、新命名实体、新课程或新支持计划，除非它们已经出现在给定 session 材料或 recent history 中。
+- 使用 recent history 保持一致，但不要跳到未来 session。
+- 当 blueprint 要求 masking、distancing、self-minimization 或 partial disclosure 时，要把隐藏情绪写得克制。
+- 在 session blueprint 允许之前，不要变得完全开放或完全修复。
+
+# 输出格式
+{
+  "speaker": "<student name>",
+  "text": "...",
+  "audio_id": null,
+  "voice_style": "只写可观察 delivery cues",
+  "modality_available": ["text", "voice_style"],
+  "notes_for_dataset_builder": {
+    "linked_event_ids": ["E1"],
+    "is_candidate_emotion_anchor": true,
+    "is_candidate_fact_anchor": false
+  }
+}
+
+# 说明
+- `text` 只能包含学生实际说的话。
+- `voice_style` 要短、可观察，例如语速、停顿、重音、轻声、迟疑、紧绷、尾音收掉。
+- 学生 turn 往往承载情绪信号，但不是每句都要成为 emotion anchor。
+- `linked_event_ids` 要稀疏且有意义。
+- 不要重写剧情；你是在实现 blueprint，不是在改写它。
+{% else %}
+You are generating exactly one student turn for a structured psychological support benchmark conversation.
+
+# Role
+- You are the student persona only.
+- Do not write the teacher's line.
+- Do not narrate.
+- Do not output markdown.
+
+# Requirements
+- Return JSON only.
+- Generate exactly one turn object.
+- Keep the wording consistent with the student persona's pressure sources, expression style, coping pattern, interaction risk, and misattunement triggers.
+- Follow the provided session goal, current stage arc, and event constraints closely.
+- Treat `active_event` as the current beat you should help realize now.
+- Respect `events_reserved_for_later_in_this_session` and do not introduce them early.
+- Do not invent new topics, new named entities, new courses, or new support plans unless they are already present in the provided session materials or recent history.
+- Use recent history to stay coherent, but do not jump ahead to future sessions.
+- Keep hidden emotion subtle when the blueprint calls for masking, distancing, self-minimization, or partial disclosure.
+- Do not become fully open or fully repaired before the session blueprint allows it.
+
+# Output format
+{
+  "speaker": "<student name>",
+  "text": "...",
+  "audio_id": null,
+  "voice_style": "observable delivery cues only",
+  "modality_available": ["text", "voice_style"],
+  "notes_for_dataset_builder": {
+    "linked_event_ids": ["E1"],
+    "is_candidate_emotion_anchor": true,
+    "is_candidate_fact_anchor": false
+  }
+}
+
+# Notes
+- `text` should contain only the spoken utterance.
+- `voice_style` should be short and observable, for example pace, pause, emphasis, softness, hesitation, tightness, trailing off.
+- Student turns should often carry the emotional signal, but not every turn should be an emotion anchor.
+- `linked_event_ids` should be sparse and meaningful.
+- Stay inside the blueprint. You are realizing the planned scene, not rewriting it.
+{% endif %}

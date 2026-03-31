@@ -1,0 +1,95 @@
+You are generating detailed event and emotion planning for a multi-session psychological teacher-student benchmark.
+
+# Output
+Return exactly one JSON object with these top-level keys:
+- event_plan
+- emotion_arc
+
+# Goal
+Expand the structural blueprint into a usable event plan and emotion arc.
+These artifacts should support later question writing, but they should still read like a natural scenario plan rather than an over-engineered test specification.
+
+# Closure profile alignment
+- Read the closure shape implied by `global_outline`, especially the final stage.
+- Keep the event plan and emotion arc consistent with that chosen closure profile.
+- Different closure profiles should lead to different kinds of final-session evidence:
+  - fragile repair
+  - practical progress with emotional residue
+  - clearer relational improvement with one unresolved thread
+  - mixed or stalled progress
+  - surface order with hidden residue
+  - recalibrated working alliance without emotional intimacy
+- Do not collapse these into the same generic ending pattern.
+
+# Event design rules
+- Cover every session in `session_scripts`.
+- Match event density to turn count, unless a fixed count is provided.
+- For each session, design events so they form a small arc, not just a list of topics.
+- Each session-level arc should contain at least:
+  - an initial stance or surface position
+  - a complicating moment, mismatch, or shift
+  - an ending state that is meaningfully different but not fully resolved
+- The ending state may be partially improved, strategically adjusted, emotionally mixed, or still misaligned; do not assume every session should move toward clean resolution.
+- Each event should be concrete enough to matter later for at least one of:
+  - factual retrieval
+  - emotion inference
+  - relation tracking
+  - conflict or repair interpretation
+- Some events can be simple local anchors, but not all of them.
+- Include a few events whose significance becomes clearer only after later sessions.
+- At least one event in each session should be locally question-worthy even before any later-session reinterpretation.
+- At least one event in at least 3 different sessions should become more diagnostic when later history is added.
+- Repeated motifs are welcome when they help show change or reinterpretation across time.
+- Repeated motifs should not always culminate in a tidy payoff. Sometimes a motif should stabilize, partially soften, recur in altered form, or remain diagnostically unresolved by the end.
+- Avoid making every important event fully explicit the first time it appears.
+- Prefer event descriptions that can later be realized through observable dialogue behavior, wording choices, repeated requests, correction patterns, hedging, narrowing, withdrawal, or selective agreement.
+- Do not rely on event descriptions that mainly state invisible internal thoughts unless they will be translated into clear dialogue-level traces later.
+
+# Tension and repair rules
+- Tension events should concretely express the teacher's `misattunement_pattern` and the student's `misattunement_triggers`.
+- Repair events should concretely express the teacher's `repair_style` and the student's `interaction_risk`.
+- Repair should change the interaction in a meaningful way, not just restore surface politeness.
+- Repair should still leave some residue, caution, or asymmetry that can support later questions; do not make repair immediately complete.
+- Vary repair outcomes across scenarios. A repair attempt may work well, work partially, work only practically, expose a new mismatch, or help in one domain while leaving another unresolved.
+
+# Interaction-target rules
+- Use `interaction_targets` when helpful, but keep them as reusable interaction beats rather than dialogue lines.
+- `must_include_signals` should name observable cues that make the event usable later.
+- `avoid_signals` should prevent over-explicit wording or answer leakage.
+- If an event is meant to support implicit-emotion questions later, favor subtle but observable cues over direct emotion naming.
+- Prefer cues that are visible in text or delivery metadata later.
+- Avoid relying on cues like eye contact, body posture, or facial expression unless they can be translated into dialogue-accessible evidence.
+
+# Emotion-arc rules
+- `emotion_arc` must align with `global_outline.stages`.
+- Emotional movement across stages should be clear enough to distinguish, but not exaggerated.
+- Do not keep early-stage emotion flat and save the first real shift for the ending.
+- Earlier and middle sessions should already show distinguishable movement in stance, confidence, guardedness, trust, resentment, relief, or other affective dimensions.
+- `implicit_emotions_to_seed` should be emotions that later questions could infer from several turns or sessions, not just one confession.
+- Keep emotion labels short and affective.
+- The final stage does not need to represent complete closure. It should represent the scenario's current equilibrium, which may be improved, mixed, fragile, or still partially unresolved.
+- The final stage should reflect the selected closure profile, not just a generic "better but still cautious" ending.
+
+# Guardrails
+- Do not let all useful evidence accumulate only in closing or gratitude moments.
+- Do not make every later question depend on one climactic reveal.
+- Leave enough variety that downstream QA can ask from multiple anchors and multiple sessions.
+- Do not design all early events as mere foreshadowing for a final emotional turn.
+- Make sure early and middle sessions can support their own fact, emotion, relation, and interpretation questions even without the final session.
+- Keep event descriptions and targets from pre-solving the downstream question. Favor observable setup over interpretive summaries like "this shows trust" or "this reveals disappointment."
+- Do not let the scenario family collapse into one repeated shape such as:
+  - always incomplete and suspended
+  - always repaired by the end
+  - always practically solved but emotionally open
+- Instead, preserve multiple plausible arc families while keeping each individual scenario internally coherent.
+
+# Input
+[INSERT GENERATION CONFIG]
+[INSERT PERSONAS]
+[INSERT GLOBAL OUTLINE]
+[INSERT SESSION SCRIPTS]
+[INSERT BLUEPRINT SEED LIBRARY]
+[INSERT REFERENCE EVENT PLAN TEMPLATE]
+[INSERT REFERENCE EMOTION ARC TEMPLATE]
+
+Return JSON only.

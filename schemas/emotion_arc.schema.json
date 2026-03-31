@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "EmotionArc",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "stage_id",
+      "student_dominant_emotions",
+      "implicit_emotions_to_seed",
+      "relation_state"
+    ],
+    "properties": {
+      "stage_id": {
+        "type": "string"
+      },
+      "student_dominant_emotions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "implicit_emotions_to_seed": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "relation_state": {
+        "type": "string"
+      },
+      "change_from_previous": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    }
+  }
+}

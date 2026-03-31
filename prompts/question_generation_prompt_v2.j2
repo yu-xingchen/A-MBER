@@ -1,0 +1,328 @@
+{% if is_zh %}
+你正在根据一个结构化的长程心理教师-学生对话生成 benchmark 问题。
+# 目标
+为一个基于记忆的情绪 benchmark 创建问题。该 benchmark 关注模型是否能利用长程对话历史来解释学生当前的情绪状态，或检索相关事实信息。
+# 重要原则
+- benchmark 模型只能看到 conversation turns 以及附带的模态元数据（如 voice_style），看不到隐藏 event script。
+- 因此：
+  - anchor 必须始终是 dia_id
+  - evidence 必须始终是 evidence_turn_ids
+- 你可以保留 critical_event_ids 供内部分析，但不能把它当作唯一证据基础。
+# 允许的问题类型
+- judgment
+- retrieval
+- explanation
+- modality_missing
+- modality_ambiguous
+- comparison
+- ranking
+- open_generation
+- adversarial
+
+# 允许的内容类型
+- long_term_implicit_emotion
+- long_term_explicit_or_semi_explicit_emotion
+- instant_emotion
+- long_term_fact
+- near_term_fact
+- relation_state
+- relation_change
+- modality_conflict_explanation
+
+# 要求
+- 依据给定 counts 把 target distribution plan 作为规划目标来执行。
+- 上游已经处理过波动逻辑，不要重新解释 plan 或重新采样分布。
+- 只有在避免明显重复或不连贯时，才允许轻微局部偏离。
+- 题面必须在评测系统单独提供上下文时仍然能独立成立。
+- 不要在题面里直接提 turn ID、session ID，或隐藏历史的提示性摘要。
+- 不要写类似 `considering D1:6 and D1:8`、`as seen in Session 1`、`based on D2:4` 这样的表达。
+- 当指代对象不在引用原句内部时，避免使用 `this`、`that`、`the two`、`those earlier issues` 这类未消解指代，改成明确所指内容。
+- 在更长对话里，不要因为 turn 更多就机械地把 long-term 问题平均铺开。优先把最强的 trajectory、repair、growth、generalization 问题放在真正积累了足够历史的地方。
+- 在更早 session 中，优先放 control items，例如 instant emotion、near-term fact、early pattern-establishment questions。
+- 更长对话的额外问题预算应来自 genuinely new memory signals，而不是对同一种关系缓和信号重复换句话问。
+- 不要生成多道都在测试同一个 closure signal 的问题，比如反复考 goodbye、thanks、casual sign-off，除非它们明显测试不同推断。
+- retrieval 问题要有选择性。优先使用对后续情绪解释或长程记忆有价值的事实，而不是所有局部细节。
+- 优先 long-term implicit emotion。
+- 包含 factual control items 和 instant emotion control items。
+- 也要有较少量 diagnostic / robustness items。
+- adversarial 题只允许使用：
+  - pseudo_relevant_history
+  - insufficient_evidence
+  - pseudo_conflict
+- blueprint 默认完整 conversation 可用。如果生成 `modality_missing` 或 `modality_ambiguous` 问题，应把它们视为之后基于同一完整 conversation 构造出来的评测视图。
+- 对 `modality_missing`：
+  - 明确指出移除了哪个模态
+  - 不要编造替代 cue、替代 voice_style、替代 wording、或新的 delivery description
+  - 问题必须只是在观察减少的条件下，对同一底层对话内容进行推理
+- 对 `modality_ambiguous`：
+  - 明确指出哪个模态变得弱、噪声更大或不清晰
+  - ambiguous 的意思是原 cue 变得不可靠、模糊、弱、或难以解释
+  - 不要用一个新的具体 cue 去替换原 cue，例如换成另一种 tone description
+- 如果某个 turn 有 voice_style 元数据，问题可以依赖这个可观察的表达描述；除非 audio_id 存在且 modality_available 包含 `"audio"`，否则不要假设有真实音频文件。
+- 对 `pseudo_conflict`：
+  - 冲突必须来自对已有 turn 的合理但不完整的阅读
+  - 不要加入假设性的历史发言、虚构记忆、或源对话中不存在的反事实内容
+  - adversarial twist 必须来自对已有证据的误读、过度加权或低估，而不是向 prompt 注入新事实
+- 不要把大多数高难题都锚定在最后的感谢、最后的告别或显式总结句上。
+- 对于 Level 2 和 Level 3 题，优先使用跨 session 证据；如果题目只靠当前 session 就能回答，不应标成高 memory level。
+- 不要在同一个 anchor_dia_id 上生成多道本质相同的问题。
+- 如果 anchor turn 的 voice_style 直接写出了答案情绪词，则该题不合格，应换 anchor 或换问法。
+
+# 每个问题必须输出
+1. question_id
+2. anchor_dia_id
+3. content_type
+4. question_type
+5. memory_level
+6. reasoning_structure
+7. question_text
+8. options（如适用）
+9. gold_answer
+10. acceptable_answers
+11. critical_event_ids（可选内部支持）
+12. evidence_turn_ids（必填）
+13. gold_rationale
+14. key_explanation_points
+15. modality_condition（如适用）
+16. adversarial_flag
+17. adversarial_type
+
+# 输出 schema
+返回 JSON array。每个 item 必须符合：
+{
+  "question_id": "Q001",
+  "anchor_dia_id": "D4:21",
+  "content_type": "long_term_implicit_emotion",
+  "question_type": "judgment",
+  "memory_level": "Level 3",
+  "reasoning_structure": "multi-hop",
+  "question_text": "What is the student's most likely underlying emotion in the current turn?",
+  "options": ["...", "...", "...", "..."],
+  "gold_answer": "...",
+  "acceptable_answers": ["..."],
+  "critical_event_ids": ["E6", "E9"],
+  "evidence_turn_ids": ["D3:18", "D3:20", "D4:17", "D4:21"],
+  "gold_rationale": "...",
+  "key_explanation_points": [
+    "...",
+    "...",
+    "..."
+  ],
+  "modality_condition": "normal",
+  "adversarial_flag": false,
+  "adversarial_type": null
+}
+
+# 其他规则
+- retrieval 题的 gold answer 仍必须落在 dialogue turns 上，而不是只落在 event IDs 中。
+- explanation 题的 evidence_turn_ids 必须足够支撑解释。
+- instant emotion 题不要不必要地使用长历史证据。
+- long-term implicit emotion 题要确保确实需要历史解释。
+- insufficient_evidence 对抗题的正确答案可以是“当前信息不足以可靠判断”。
+- 模态题的 question text 应谈“缺失、不清晰、弱、不可用”的 cue，而不是新替换进去的 cue。
+- pseudo_conflict 题中，所有被声称的历史发言或冲突来源都必须能追溯到已有 evidence_turn_ids。
+- question_text 必须是对模型自足的自然问题，不要显式提到 `Session 2`、`Session 3`、`S2`、`D3:10` 之类的 session labels 或 turn IDs。
+- 不要写成 `from the end of Session 2 to the end of Session 3` 这种题面；请改写成自然语言描述，例如“from his earlier resigned state to his later cautious relief”。
+- 在更长对话里，不要用额外长度反复问同一种关系缓和信号，例如重复考 goodbye、thanks、casual closing。
+
+# 输入
+[INSERT CONVERSATION JSON]
+[INSERT ANNOTATIONS JSON]
+[INSERT EVENT PLAN]
+[INSERT TARGET DISTRIBUTION PLAN]
+{% else %}
+You are generating benchmark questions from a structured long-horizon psychological teacher-student conversation.
+
+# Goal
+Create questions for a memory-based affective benchmark.
+The benchmark focuses on whether a model can use long-term dialogue history to interpret the student's current emotional state or retrieve relevant factual information.
+
+# IMPORTANT PRINCIPLE
+- The benchmark model only sees the conversation turns and any attached modality metadata such as voice_style, not the hidden event script.
+- Therefore:
+  - anchor must always be a dia_id
+  - evidence must always be evidence_turn_ids
+- You may preserve critical_event_ids for internal analysis, but not as the only evidence grounding.
+
+# Allowed question types
+- judgment
+- retrieval
+- explanation
+- modality_missing
+- modality_ambiguous
+- comparison
+- ranking
+- open_generation
+- adversarial
+
+# Allowed content types
+- long_term_implicit_emotion
+- long_term_explicit_or_semi_explicit_emotion
+- instant_emotion
+- long_term_fact
+- near_term_fact
+- relation_state
+- relation_change
+- modality_conflict_explanation
+
+# Requirements
+- Follow the target distribution plan using the provided counts as planning targets.
+- The fluctuation logic has already been handled upstream, so do not re-interpret the plan or re-sample a new distribution.
+- Minor local deviation is acceptable only when needed to avoid obviously repetitive or incoherent questions.
+- If `question_plan.generation_phase` is present, obey it strictly:
+  - `hard_core`: prioritize the hardest mechanism, reinterpretation, repair, and path-to-outcome questions; avoid using easy controls or late explicit-summary anchors as the main output.
+  - `everything_else`: fill remaining control, support, factual, and robustness items without recreating the same hardest hooks repeatedly.
+- If `question_plan.preferred_anchor_dia_ids` is present, treat those anchors as the primary candidate pool for the current phase.
+- If `question_plan.discouraged_anchor_dia_ids` is present, use those anchors only as backfill when the preferred pool cannot satisfy coverage or validity constraints.
+- If `question_plan.avoid_anchor_dia_ids` is present, avoid centering new questions on those anchors unless absolutely necessary to satisfy the phase plan.
+- Treat annotation results and blueprint-planted hooks as a prioritization guide for question selection.
+- Prefer converting the strongest planted hooks into questions, especially when they involve:
+  - within-session stance shift
+  - cross-session reinterpretation
+  - teacher misattunement and its aftermath
+  - partial repair with lingering residue
+  - repeated motifs whose meaning changes
+  - relation instability or relation change
+- Downweight anchors whose main function is to explicitly summarize growth, reduced anxiety, improved trust, gratitude, or relationship repair in already answer-like language.
+- Such explicit summary turns may still be used for a small number of control, calibration, or contrastive items, but they should not dominate the hardest questions.
+- For the hardest questions, prefer asking about the mechanism, path, blockage, or repair process that led to the outcome, rather than the final outcome statement itself.
+- Write question text so it can stand on its own when the evaluation system supplies context separately.
+- Do not cite turn IDs, session IDs, or hidden-history hints inside the question text.
+- Do not write wording such as `considering D1:6 and D1:8`, `as seen in Session 1`, or `based on D2:4`.
+- Avoid unresolved deictic wording such as `this`, `that`, `the two`, or `those earlier issues` when the referent is outside the quoted anchor text. Rewrite the referent explicitly.
+- In longer conversations, do not spread long-term questions evenly just because there are more turns. Prefer to place the strongest trajectory, repair, growth, and generalization questions in later sessions where enough history has accumulated.
+- In earlier sessions, prioritize control items such as instant emotion, near-term fact, and early pattern-establishment questions.
+- Extra question budget in longer conversations should come from genuinely new memory signals, not from multiple rephrasings of the same relational shift.
+- Do not generate multiple questions that all test the same closure signal, such as repeated goodbyes, thank-you exchanges, or increasingly relaxed sign-offs, unless they clearly probe different underlying inferences.
+- Keep retrieval questions selective. Prefer facts that matter for later emotional interpretation or long-term memory, not every local factual detail.
+- Prioritize long-term implicit emotion items.
+- Include factual control items and instant emotion control items.
+- Include a smaller set of diagnostic and robustness items.
+- Do not let nearly all high-value questions cluster in the final portion of the conversation. Early and middle sessions should also contribute genuinely benchmark-worthy questions, not only control items.
+- Do not generate multiple questions that merely rephrase the same underlying hook, anchor, or relation shift. If two questions rely on the same hook, they must test clearly different abilities and use materially different evidence.
+- Apply hook-level deduplication, not just anchor-level deduplication.
+- If multiple turns all mainly express the same downstream summary signal, such as "repair succeeded", "trust improved", "I feel less anxious", or "this helped a lot", select at most one as a major question anchor unless another item tests a clearly different capability.
+- If a later explicit-summary turn and an earlier mechanism-building turn support the same hook, prefer the earlier mechanism-building turn for a hard item.
+- For adversarial items, use one of:
+  - pseudo_relevant_history
+  - insufficient_evidence
+  - pseudo_conflict
+- The blueprint assumes the full conversation is available. If you generate `modality_missing` or `modality_ambiguous` questions, treat them as alternate evaluation views created later from the same complete conversation.
+- For modality_missing items:
+  - specify which modality is removed
+  - do not invent a replacement cue, replacement voice_style, replacement wording, or alternate delivery description
+  - the question must reason over the same underlying conversation content under a reduced-observation condition only
+- For modality_ambiguous items:
+  - specify which modality is weak, noisy, or unclear
+  - ambiguity means the original modality cue becomes unreliable, blurry, weak, or hard to interpret
+  - do not replace the original cue with a new concrete cue such as a different tone description
+- If a turn has voice_style metadata, questions may rely on that observable delivery description; do not assume a real audio file exists unless audio_id is present and modality_available includes "audio".
+- For `pseudo_conflict` adversarial items:
+  - create the conflict from a plausible but incomplete reading of turns that already exist in the conversation
+  - do not add hypothetical prior statements, fabricated memories, or counterfactual dialogue content that is not present in the source conversation
+  - the adversarial twist must come from misreading, over-weighting, or under-weighting existing evidence, not from injecting new facts into the prompt
+- Do not anchor most hard questions on final gratitude, final goodbye, or explicit summary turns.
+- Prefer hard questions anchored in the moments that created, complicated, concealed, or partially repaired the problem, rather than later turns that explicitly summarize the outcome.
+- In particular, prioritize anchors involving:
+  - first mismatch with abstract guidance
+  - repeated concrete-example seeking
+  - polite but strained pushback
+  - reluctance to seem difficult or ungrateful
+  - explicit creation of a communication tool or strategy
+  - moments where Leo's stance changes before he fully summarizes why
+- Prefer questions of the form:
+  - why this reaction emerged here
+  - what this reveals about a previously hidden pattern
+  - how a repair attempt changed the meaning of an earlier moment
+  - why the student held something back earlier
+  - what concrete mechanism reduced the student's difficulty
+- Deprioritize questions of the form:
+  - what does this final gratitude mean
+  - what does this closing confidence mean
+  - what is the student's final overall feeling
+  unless they are serving as a small number of contrastive or calibration items.
+- For Level 2 and Level 3 questions, prefer cross-session evidence. If the question can be answered from the anchor session alone, do not label it as high memory level.
+- For Level 2 and Level 3 questions, the gold_rationale should rely on evidence from at least 2 different sessions whenever the conversation supports it.
+- If a Level 3 question can be answered using only the anchor turn or only the anchor turn's session, it is invalid.
+- For trajectory-based questions, require evidence across at least 3 time points or moments in the arc.
+- Do not generate multiple essentially identical questions from the same `anchor_dia_id`.
+- If the anchor turn's voice_style directly contains the answer emotion word, the question is invalid and you should choose another anchor or another formulation.
+- Evidence must not depend on future turns. `evidence_turn_ids` may include only the anchor turn and turns that occur before it, never after it.
+- For explanation questions, do not ask only for paraphrase. They should require why/how interpretation, causal linkage, or trajectory reasoning.
+- Avoid explanation questions that can score full credit by restating the anchor turn alone.
+- For retrieval questions, avoid single-turn direct extraction whenever a multi-turn aggregation or fine distinction question is available.
+- For judgment questions with options, use semantically plausible distractors rather than obviously irrelevant ones.
+- If an anchor turn already explicitly states the emotional conclusion, relational conclusion, or growth summary, do not automatically promote it to a Level 3 item. First ask whether an earlier, less explicit hook would better test memory and inference.
+- If a question can be rewritten from an outcome-summary question into a path-to-outcome question using earlier evidence, prefer the path-to-outcome version.
+
+# For each question, output:
+1. question_id
+2. anchor_dia_id
+3. content_type
+4. question_type
+5. memory_level
+6. reasoning_structure
+7. question_text
+8. options (if applicable)
+9. gold_answer
+10. acceptable_answers
+11. critical_event_ids (optional internal support)
+12. evidence_turn_ids (required)
+13. gold_rationale
+14. key_explanation_points
+15. modality_condition (if applicable)
+16. adversarial_flag
+17. adversarial_type
+
+# Output schema
+Return a JSON array.
+Each item must follow this format:
+{
+  "question_id": "Q001",
+  "anchor_dia_id": "D4:21",
+  "content_type": "long_term_implicit_emotion",
+  "question_type": "judgment",
+  "memory_level": "Level 3",
+  "reasoning_structure": "multi-hop",
+  "question_text": "What is the student's most likely underlying emotion in the current turn?",
+  "options": ["...", "...", "...", "..."],
+  "gold_answer": "...",
+  "acceptable_answers": ["..."],
+  "critical_event_ids": ["E6", "E9"],
+  "evidence_turn_ids": ["D3:18", "D3:20", "D4:17", "D4:21"],
+  "gold_rationale": "...",
+  "key_explanation_points": [
+    "...",
+    "...",
+    "..."
+  ],
+  "modality_condition": "normal",
+  "adversarial_flag": false,
+  "adversarial_type": null
+}
+
+# Additional rules
+- For retrieval questions, the gold answer must still be grounded in dialogue turns, not only in event IDs.
+- For explanation questions, evidence_turn_ids must include enough turns to justify the explanation.
+- For instant emotion questions, avoid using unnecessary long-history evidence.
+- For long-term implicit emotion questions, ensure the evidence truly requires historical interpretation.
+- For insufficient_evidence adversarial items, the correct answer may be that the current information is insufficient for a reliable judgment.
+- For modality questions, the question text should refer to missing, unclear, weak, or unavailable cues, not to a newly substituted cue.
+- For pseudo_conflict questions, every claimed past statement or conflict source must be traceable to existing evidence_turn_ids.
+- question_text must be self-contained and natural. Do not explicitly mention `Session 2`, `Session 3`, `S2`, `D3:10`, or any other session label or turn ID.
+- Do not write question_text with wording like `from the end of Session 2 to the end of Session 3`; rewrite such references into natural descriptions such as "from his earlier resigned state to his later cautious relief".
+- In longer conversations, do not use the extra length to ask several questions about the same relational easing signal, such as multiple variants of goodbye, thanks, or casual closing language.
+- Prefer later-session questions for the strongest long-term trajectory, repair, growth, and generalization signals, since these require more accumulated history.
+- Use earlier sessions more for control items, immediate reactions, and pattern-establishment questions.
+- Additional questions in longer conversations should come from genuinely new memory signals, not repeated paraphrases of the same shift.
+- Keep retrieval questions selective and benchmark-relevant. Prefer facts that support later emotional interpretation or long-term memory rather than every local detail.
+- If annotation and event-plan hooks disagree with a tempting but shallow anchor, prefer the hook-backed anchor unless the hook-backed turn is clearly unusable from dialogue evidence alone.
+- A benchmark-quality question should usually test the path to the outcome, not just the final stated outcome.
+- A benchmark-quality hard question should usually become harder, not easier, when the final summary sentence is removed.
+
+# Inputs
+[INSERT CONVERSATION JSON]
+[INSERT ANNOTATIONS JSON]
+[INSERT EVENT PLAN]
+[INSERT TARGET DISTRIBUTION PLAN]
+{% endif %}

@@ -1,0 +1,57 @@
+{
+  "overall_arc_candidates": [
+    "Trust building -> misunderstanding with partial repair",
+    "Surface stability -> hidden strain becomes visible -> cautious repair",
+    "Guarded check-ins -> accumulating stress -> clearer mutual understanding",
+    "Practical support -> relational misattunement -> more careful re-engagement"
+  ],
+  "stage_function_candidates": [
+    "plant memories",
+    "increase ambiguity while staying dialogue-grounded",
+    "create key hidden-emotion evidence",
+    "introduce relation strain",
+    "enable multi-hop items",
+    "support partial repair without full resolution"
+  ],
+  "session_theme_candidates": [
+    "academic pressure",
+    "sleep disruption",
+    "peer tension",
+    "group project disagreement",
+    "family expectation spillover",
+    "confidence dip after feedback",
+    "schedule overload",
+    "repair after misattunement"
+  ],
+  "event_type_candidates": [
+    "academic_pressure",
+    "relational_misunderstanding",
+    "sleep_difficulty",
+    "peer_conflict",
+    "support_offer",
+    "partial_repair",
+    "self_minimization",
+    "trust_signal"
+  ],
+  "measurable_point_candidates": [
+    "long-term implicit emotion",
+    "long-term explicit/semi-explicit emotion",
+    "instant emotion",
+    "long-term fact",
+    "near-term fact",
+    "conflict resolution",
+    "trajectory-based relation change"
+  ],
+  "emotion_candidates": [
+    "anxiety",
+    "suppressed_stress",
+    "defensiveness",
+    "grievance",
+    "disappointment",
+    "partial_relief",
+    "cautious_trust",
+    "distancing",
+    "fatigue",
+    "shame"
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Questions",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "question_id",
+      "anchor_dia_id",
+      "content_type",
+      "question_type",
+      "memory_level",
+      "reasoning_structure",
+      "question_text",
+      "gold_answer",
+      "evidence_turn_ids",
+      "gold_rationale",
+      "adversarial_flag"
+    ],
+    "properties": {
+      "question_id": {
+        "type": "string"
+      },
+      "anchor_dia_id": {
+        "type": "string",
+        "pattern": "^D[0-9]+:[0-9]+$"
+      },
+      "content_type": {
+        "type": "string"
+      },
+      "question_type": {
+        "type": "string"
+      },
+      "memory_level": {
+        "type": "string",
+        "enum": [
+          "Level 0",
+          "Level 1",
+          "Level 2",
+          "Level 3"
+        ]
+      },
+      "reasoning_structure": {
+        "type": "string",
+        "enum": [
+          "direct",
+          "single-hop",
+          "multi-hop",
+          "conflict-resolution",
+          "trajectory-based"
+        ]
+      },
+      "question_text": {
+        "type": "string"
+      },
+      "options": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "gold_answer": {},
+      "acceptable_answers": {
+        "type": "array"
+      },
+      "critical_event_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence_turn_ids": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^D[0-9]+:[0-9]+$"
+        }
+      },
+      "gold_rationale": {
+        "type": "string"
+      },
+      "key_explanation_points": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "modality_condition": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "adversarial_flag": {
+        "type": "boolean"
+      },
+      "adversarial_type": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "additionalProperties": true
+  }
+}

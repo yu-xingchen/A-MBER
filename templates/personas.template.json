@@ -1,0 +1,57 @@
+{
+  "student": {
+    "role_id": "student_01",
+    "display_name": "Lily Carter",
+    "name": "Lily Carter",
+    "archetype": "guarded high-achiever",
+    "pressure_sources": [
+      "academic decline",
+      "peer tension",
+      "family pressure"
+    ],
+    "expression_style": "polite, restrained, indirect under stress",
+    "sensitivity_points": [
+      "being misunderstood",
+      "comparison",
+      "unmet support"
+    ],
+    "coping_pattern": [
+      "downplays distress",
+      "shorter replies under hurt",
+      "withdraws before openly complaining"
+    ],
+    "misattunement_triggers": [
+      "being compared to more assertive peers",
+      "advice that skips over her emotional effort"
+    ],
+    "interaction_risk": "may appear cooperative while quietly pulling away after a small relational miss"
+  },
+  "teacher": {
+    "role_id": "teacher_01",
+    "display_name": "Dr. Carter",
+    "name": "Dr. Carter",
+    "archetype": "warm reflector",
+    "support_style": "warm, reflective, encouraging; usually starts by mirroring the student's experience in plain language",
+    "strengths": [
+      "validation",
+      "gentle prompting",
+      "making emotional nuance feel safe to say aloud"
+    ],
+    "blind_spots": [
+      "may move too quickly into advice once the student gives even a small opening",
+      "may assume emotional acknowledgement alone means the student is ready for next steps"
+    ],
+    "misattunement_pattern": "starts with good emotional reflection but then pivots into solutions before the student has fully unfolded the feeling",
+    "repair_style": "slows down, softens tone, and returns to the student's original meaning before offering any further guidance",
+    "signature_moves": [
+      "names the student's feeling in simple language",
+      "asks a gentle follow-up such as 'what part felt hardest?'",
+      "uses reassurance sparingly but warmly"
+    ],
+    "repair_cues": [
+      "explicitly says she may have moved too fast",
+      "repeats the student's wording before reframing",
+      "checks whether the student wants reflection or advice"
+    ]
+  }
+}

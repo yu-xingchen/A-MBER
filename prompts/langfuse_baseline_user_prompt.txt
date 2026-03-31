@@ -1,0 +1,10 @@
+Context policy: {{context_policy}}
+
+Conversation context:
+{{context_transcript}}
+
+Question:
+{{question_text}}
+
+Options:
+{{options_block}}

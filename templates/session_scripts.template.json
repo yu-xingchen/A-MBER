@@ -1,0 +1,30 @@
+[
+  {
+    "session_id": "S1",
+    "stage_id": "stage_1",
+    "turn_count": 14,
+    "session_theme": "academic pressure",
+    "session_goal": "introduce stress and guardedness",
+    "main_topics": ["grades", "sleep"],
+    "major_events": ["grade decline mentioned", "sleep trouble mentioned"],
+    "dominant_student_emotions": ["anxiety"],
+    "relationship_state": "initial_caution",
+    "measurable_points": ["near-term fact", "semi-explicit emotion"],
+    "future_memory_to_plant": ["student minimizes distress"],
+    "constraints": ["do not fully open up"]
+  },
+  {
+    "session_id": "S2",
+    "stage_id": "stage_2",
+    "turn_count": 16,
+    "session_theme": "misunderstanding and repair attempt",
+    "session_goal": "introduce mild strain and partial emotional repair",
+    "main_topics": ["peer tension", "teacher feedback perceived as dismissive"],
+    "major_events": ["student feels misunderstood", "teacher attempts repair"],
+    "dominant_student_emotions": ["grievance", "defensiveness"],
+    "relationship_state": "mild_tension",
+    "measurable_points": ["long-term implicit emotion", "conflict resolution"],
+    "future_memory_to_plant": ["student withdraws briefly before partial re-engagement"],
+    "constraints": ["do not resolve tension fully"]
+  }
+]

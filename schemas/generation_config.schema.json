@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GenerationConfig",
+  "type": "object",
+  "required": [
+    "batch_name",
+    "dataset_count",
+    "llm",
+    "scenario_type",
+    "target_role",
+    "sessions_per_conversation",
+    "turns_per_conversation",
+    "stage_count",
+    "question_count",
+    "output_root",
+    "output_naming",
+    "persona_selection",
+    "blueprint_generation"
+  ],
+  "properties": {
+    "batch_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataset_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "llm": {
+      "type": "object",
+      "required": [
+        "provider",
+        "model",
+        "api_key_env"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "api_key_env": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "scenario_type": {
+      "type": "string"
+    },
+    "prompt_language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "zh"
+      ]
+    },
+    "target_role": {
+      "type": "string"
+    },
+    "sessions_per_conversation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "turns_per_conversation": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "stage_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "question_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "output_root": {
+      "type": "string",
+      "minLength": 1
+    },
+    "output_naming": {
+      "type": "object",
+      "required": [
+        "append_timestamp",
+        "timestamp_format"
+      ],
+      "properties": {
+        "append_timestamp": {
+          "type": "boolean"
+        },
+        "timestamp_format": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "persona_selection": {
+      "type": "object",
+      "required": [
+        "mode",
+        "seed"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "round_robin",
+            "random_seeded",
+            "random"
+          ]
+        },
+        "seed": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
+    },
+    "blueprint_generation": {
+      "type": "object",
+      "required": [
+        "enable_repair",
+        "max_repair_attempts"
+      ],
+      "properties": {
+        "enable_repair": {
+          "type": "boolean"
+        },
+        "max_repair_attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fixed_events_per_session": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "conversation_generation": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "single_agent",
+            "multi_agent"
+          ]
+        },
+        "framework": {
+          "type": "string",
+          "enum": [
+            "autogen"
+          ]
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "max_turn_retries": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

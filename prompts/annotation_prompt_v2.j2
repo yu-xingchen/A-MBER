@@ -1,0 +1,109 @@
+You are annotating a structured long-horizon psychological teacher-student conversation for memory-based emotion evaluation.
+
+# Objective
+For selected student turns, produce turn-level annotations that are grounded in observable conversation evidence and useful for later hard question generation.
+
+# Core principle
+- The benchmark model can only see dialogue turns and modality metadata such as `voice_style`.
+- Therefore all evidence must be grounded in dialogue-level evidence.
+- You may use `critical_event_ids` as internal support, but never as the only basis for the annotation.
+- You may use blueprint-planted hooks, repeated motifs, mismatch events, repair events, and other "nails" from the event plan to help identify high-value turns.
+- But those blueprint hooks are only a guide for candidate selection. The final annotation must still be justified from actual dialogue evidence.
+
+# What the annotation should optimize for
+- Distinguish between:
+  - what is explicit in the current turn
+  - what is only inferable with recent context
+  - what genuinely requires long-range memory
+- Reserve Level 3 for turns whose correct interpretation really depends on earlier sessions.
+- Prefer annotations that can later support discriminative QA, not just obvious paraphrase questions.
+- When the conversation genuinely supports it, preserve diversity across sessions and across questionable emotional dimensions rather than over-focusing on one late summary signal.
+- Treat annotation as benchmark-anchor discovery, not just emotion labeling.
+- Prefer turns that can later support questions about:
+  - stance shift within a session
+  - cross-session reinterpretation
+  - teacher misattunement and its aftermath
+  - partial repair with lingering residue
+  - relation change or relation instability
+  - similar surface wording with changed meaning
+
+# Rules
+- The evaluation target is always the student's emotional state.
+- Do not over-interpret every vague or polite utterance as hidden distress.
+- If evidence is weak, say so in the rationale.
+- If a turn looks emotionally simple on the surface but is reinterpreted by later history, capture that.
+- Use `voice_style` only as observable delivery evidence such as pace, hesitation, firmness, softness, pauses, or clipped phrasing. Do not treat it as hidden interpretation.
+- If the turn is already fully explicit and needs almost no history, do not inflate its memory level.
+- Prefer citing non-adjacent or cross-session evidence when that is truly necessary, but do not force long-range memory if the turn is actually local.
+- Do not concentrate annotations only on late-session summary turns, gratitude turns, or easy explicit turns.
+- If the blueprint planted a specific hook earlier, prefer annotating the dialogue turn where that hook becomes legible, ambiguous, challenged, repaired, or reinterpreted.
+- If a turn is question-worthy because of a same-session contrast, mismatch, or reversal, make that explicit in the rationale.
+- If a turn is question-worthy because later sessions change its meaning, make that explicit in the rationale and evidence selection.
+- Aim to cover multiple sessions and multiple kinds of question-worthy signals rather than repeatedly annotating one emotional trajectory in slightly different wording.
+
+# Output fields
+For each selected candidate student turn, annotate:
+1. dia_id
+2. speaker
+3. underlying_emotion
+4. secondary_emotion (if applicable)
+5. implicit_explicit
+6. expression_style
+7. emotion_intensity
+8. relation_state
+9. historical_memory_required
+10. memory_dependency_level
+11. reasoning_structure
+12. critical_event_ids
+13. evidence_turn_ids
+14. evidence_turn_quotes
+15. gold_rationale
+16. target_role
+
+# Memory-level guidance
+- Level 0: current turn alone is enough
+- Level 1: nearby local history helps
+- Level 2: long-range history significantly helps
+- Level 3: earlier-session history is necessary for a reliable interpretation
+
+# Evidence rules
+- `evidence_turn_ids` must point to real turns.
+- Include the anchor turn when relevant.
+- Include only the most important supporting turns; do not pad the list mechanically.
+- `gold_rationale` must be explainable from the cited turns, not from hidden event descriptions.
+- If the strongest interpretation depends on remembering an earlier mismatch, failed support move, or later repair, cite those turns explicitly.
+- If `critical_event_ids` correspond to blueprint-planted hooks, use them to stay aligned with the scenario design, but make sure the cited dialogue turns show why that hook matters.
+
+# Output format
+Return a JSON array.
+Each item must follow this schema:
+{
+  "dia_id": "D3:24",
+  "speaker": "...",
+  "underlying_emotion": "...",
+  "secondary_emotion": "...",
+  "implicit_explicit": "...",
+  "expression_style": "...",
+  "emotion_intensity": "...",
+  "relation_state": "...",
+  "historical_memory_required": true,
+  "memory_dependency_level": "Level 3",
+  "reasoning_structure": "multi-hop",
+  "critical_event_ids": ["E6", "E9"],
+  "evidence_turn_ids": ["D3:18", "D3:20", "D4:17", "D4:21"],
+  "evidence_turn_quotes": [
+    {
+      "dia_id": "D3:18",
+      "speaker": "...",
+      "text_evidence": "..."
+    }
+  ],
+  "gold_rationale": "...",
+  "target_role": "student"
+}
+
+# Input
+[INSERT CONVERSATION JSON]
+[INSERT EVENT PLAN]
+
+Return JSON only.

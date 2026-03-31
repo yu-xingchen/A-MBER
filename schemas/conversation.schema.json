@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conversation",
+  "type": "object",
+  "required": [
+    "conversation_id",
+    "scenario_type",
+    "speaker_a",
+    "speaker_b",
+    "target_speaker"
+  ],
+  "properties": {
+    "conversation_id": {
+      "type": "string"
+    },
+    "scenario_type": {
+      "type": "string"
+    },
+    "speaker_a": {
+      "type": "string"
+    },
+    "speaker_b": {
+      "type": "string"
+    },
+    "target_speaker": {
+      "type": "string"
+    }
+  },
+  "patternProperties": {
+    "^session_[0-9]+_date_time$": {
+      "type": "string"
+    },
+    "^session_[0-9]+$": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "speaker",
+          "dia_id",
+          "timestamp",
+          "turn_index_global",
+          "text",
+          "voice_style",
+          "modality_available"
+        ],
+        "properties": {
+          "speaker": {
+            "type": "string"
+          },
+          "dia_id": {
+            "type": "string",
+            "pattern": "^D[0-9]+:[0-9]+$"
+          },
+          "timestamp": {
+            "type": "string",
+            "minLength": 1
+          },
+          "turn_index_global": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "audio_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "voice_style": {
+            "type": "string",
+            "minLength": 1
+          },
+          "modality_available": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes_for_dataset_builder": {
+            "type": "object",
+            "properties": {
+              "linked_event_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "is_candidate_emotion_anchor": {
+                "type": "boolean"
+              },
+              "is_candidate_fact_anchor": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

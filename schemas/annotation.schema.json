@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Annotations",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "dia_id",
+      "speaker",
+      "underlying_emotion",
+      "implicit_explicit",
+      "expression_style",
+      "relation_state",
+      "historical_memory_required",
+      "memory_dependency_level",
+      "reasoning_structure",
+      "evidence_turn_ids",
+      "gold_rationale",
+      "target_role"
+    ],
+    "properties": {
+      "dia_id": {
+        "type": "string",
+        "pattern": "^D[0-9]+:[0-9]+$"
+      },
+      "speaker": {
+        "type": "string"
+      },
+      "underlying_emotion": {
+        "type": "string"
+      },
+      "secondary_emotion": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "implicit_explicit": {
+        "type": "string"
+      },
+      "expression_style": {
+        "type": "string"
+      },
+      "emotion_intensity": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "relation_state": {
+        "type": "string"
+      },
+      "historical_memory_required": {
+        "type": "boolean"
+      },
+      "memory_dependency_level": {
+        "type": "string",
+        "enum": [
+          "Level 0",
+          "Level 1",
+          "Level 2",
+          "Level 3"
+        ]
+      },
+      "reasoning_structure": {
+        "type": "string",
+        "enum": [
+          "direct",
+          "single-hop",
+          "multi-hop",
+          "conflict-resolution",
+          "trajectory-based"
+        ]
+      },
+      "critical_event_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "evidence_turn_ids": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "pattern": "^D[0-9]+:[0-9]+$"
+        }
+      },
+      "evidence_turn_quotes": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "dia_id",
+            "speaker",
+            "text_evidence"
+          ],
+          "properties": {
+            "dia_id": {
+              "type": "string",
+              "pattern": "^D[0-9]+:[0-9]+$"
+            },
+            "speaker": {
+              "type": "string"
+            },
+            "text_evidence": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "gold_rationale": {
+        "type": "string"
+      },
+      "target_role": {
+        "type": "string"
+      }
+    },
+    "additionalProperties": true
+  }
+}

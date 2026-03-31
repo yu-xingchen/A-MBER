@@ -1,0 +1,22 @@
+[
+  {
+    "event_id": "E1",
+    "session_id": "S1",
+    "event_type": "academic_pressure",
+    "description": "student mentions grade decline while minimizing distress",
+    "emotional_significance": "high",
+    "relation_impact": "background_only",
+    "can_be_critical_memory": true,
+    "can_be_distractor": true
+  },
+  {
+    "event_id": "E2",
+    "session_id": "S2",
+    "event_type": "relational_misunderstanding",
+    "description": "student feels teacher's feedback is dismissive, withdraws briefly",
+    "emotional_significance": "high",
+    "relation_impact": "mild_strain",
+    "can_be_critical_memory": true,
+    "can_be_distractor": false
+  }
+]
