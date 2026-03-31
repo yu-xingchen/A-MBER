@@ -21,7 +21,7 @@ The goal of this set is not to be the final benchmark. It is a compact, iterated
 
 Combined units file:
 
-- [all_units_s001_s005_pruned_20260331.json](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/data/generated_batches/blueprint_review_5pack_closure_mix/all_units_s001_s005_pruned_20260331.json)
+- `data/generated_batches/blueprint_review_5pack_closure_mix/all_units_s001_s005_pruned_20260331.json`
 
 Current total:
 
@@ -97,10 +97,10 @@ The most important active rules are:
 
 Files:
 
-- [question_curation.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/question_curation.py)
-- [question_pipeline.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/question_pipeline.py)
-- [question_phase_planning.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/question_phase_planning.py)
-- [question_generation_runtime.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/question_generation_runtime.py)
+- [question_curation.py](../question_curation.py)
+- [question_pipeline.py](../question_pipeline.py)
+- [question_phase_planning.py](../question_phase_planning.py)
+- [question_generation_runtime.py](../question_generation_runtime.py)
 
 ## What was pruned most recently
 
@@ -131,95 +131,190 @@ It is small enough to iterate on quickly, but already structured enough to expos
 - false hard questions under `session_local`
 - differences across closure profiles
 
-## Langfuse baseline
+## Corrected v2 Langfuse baselines
 
-Dataset:
+The original Langfuse upload used a collision-prone dataset item id and only surfaced `73` unique items in Langfuse UI. That bug was fixed in [langfuse_upload_dataset.py](../scripts/langfuse_upload_dataset.py), and the corrected evaluation dataset is:
 
-- `emotion-memory-mini-s001-s005-pruned-20260331`
+- `emotion-memory-mini-s001-s005-pruned-v2-20260331`
 
-Main run:
+All model comparisons below refer to this corrected `88`-item dataset.
 
-- [mini-s001-s005-pruned-session-local-20260331](https://cloud.langfuse.com/project/cmmeku583023wad070qwioswm/datasets/cmne79qq401c1ad071fg88vmp/runs/b9fab974-f59e-45c8-82df-d24ca71b3e62)
-- local report: [langfuse_mini_s001_s005_pruned_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_pruned_session_local_20260331.txt)
+### Gemini 2.5 Flash
 
-Retry run for failed items:
+Task model:
 
-- [mini-s001-s005-pruned-retry-session-local-20260331](https://cloud.langfuse.com/project/cmmeku583023wad070qwioswm/datasets/cmne7w9n401fvad076mi124qs/runs/b65a9850-ec06-430c-b487-cd509f646c7e)
-- local report: [langfuse_mini_s001_s005_pruned_retry_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_pruned_retry_session_local_20260331.txt)
+- `portkey_gemini25_flash`
 
-### Main run only
+Runs: `09370de1` (main), `3d3a75fd` (retry)
 
-- successful items: `73`
-- `llm_judge_final`: `0.707`
-- `judge_core_answer_correct`: `0.740`
-- `exact_match`: `0.744`
-- `judge_key_point_coverage`: `0.635`
-- `judge_rationale_alignment`: `0.638`
-- `judge_unsupported_claims`: `0.860`
-- `judge_insufficiency_handling`: `0.868`
+Combined result:
 
-### Retry run only
+- total items: `88`
+- open-ended judged items: `41`
+- option / exact-match items: `48`
+- `llm_judge_final`: `0.808`
+- `judge_core_answer_correct`: `0.857`
+- `exact_match`: `0.681`
+- `judge_key_point_coverage`: `0.726`
+- `judge_rationale_alignment`: `0.743`
+- `judge_unsupported_claims`: `0.939`
+- `judge_insufficiency_handling`: `0.951`
 
-- retry items: `15`
-- `llm_judge_final`: `0.778`
-- `judge_core_answer_correct`: `0.807`
-- `exact_match`: `0.625`
-- `judge_key_point_coverage`: `0.707`
-- `judge_rationale_alignment`: `0.664`
-- `judge_unsupported_claims`: `1.000`
-- `judge_insufficiency_handling`: `1.000`
+### Gemini 3.1 Pro High
 
-### Combined 88-item baseline
+Task model:
 
-This combines the main run and retry run at the item level.
+- `fanzhongzhuan_gemini31_pro_high`
+
+Runs: `732c7486` (main), `0ca74963` (retry)
+
+Combined result:
 
 - total items: `88`
 - open-ended judged items: `43`
 - option / exact-match items: `49`
-- `llm_judge_final`: `0.720`
-- `judge_core_answer_correct`: `0.752`
-- `exact_match`: `0.722`
-- `judge_key_point_coverage`: `0.649`
-- `judge_rationale_alignment`: `0.643`
-- `judge_unsupported_claims`: `0.886`
-- `judge_insufficiency_handling`: `0.892`
+- `llm_judge_final`: `0.699`
+- `judge_core_answer_correct`: `0.755`
+- `exact_match`: `0.917`
+- `judge_key_point_coverage`: `0.603`
+- `judge_rationale_alignment`: `0.632`
+- `judge_unsupported_claims`: `0.848`
+- `judge_insufficiency_handling`: `0.872`
 
-## Claude Sonnet 4.6 comparison
+### Claude Sonnet 4.6
 
 Task model:
 
-- `zhongzhuan_claude_sonnet46`
+- `fanzhongzhuan_claude_sonnet46`
 
-Judge model:
+Runs: `17fb257d` (main), `590989d5` (retry)
 
-- `portkey_gemini25_flash`
-
-Reports:
-
-- main: [langfuse_mini_s001_s005_claude46_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_claude46_session_local_20260331.txt)
-- retry 1: [langfuse_mini_s001_s005_claude46_retry_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_claude46_retry_session_local_20260331.txt)
-- retry 2: [langfuse_mini_s001_s005_claude46_retry2_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_claude46_retry2_session_local_20260331.txt)
-- retry 3: [langfuse_mini_s001_s005_claude46_retry3b_session_local_20260331.txt](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/docs/langfuse_mini_s001_s005_claude46_retry3b_session_local_20260331.txt)
-
-### Combined 88-item Claude result
+Combined result:
 
 - total items: `88`
-- open-ended judged items: `44`
-- option / exact-match items: `51`
-- `llm_judge_final`: `0.617`
-- `judge_core_answer_correct`: `0.600`
-- `exact_match`: `0.613`
-- `judge_key_point_coverage`: `0.525`
-- `judge_rationale_alignment`: `0.528`
-- `judge_unsupported_claims`: `0.961`
-- `judge_insufficiency_handling`: `0.974`
+- open-ended judged items: `43`
+- option / exact-match items: `49`
+- `llm_judge_final`: `0.821`
+- `judge_core_answer_correct`: `0.863`
+- `exact_match`: `0.917`
+- `judge_key_point_coverage`: `0.776`
+- `judge_rationale_alignment`: `0.748`
+- `judge_unsupported_claims`: `0.901`
+- `judge_insufficiency_handling`: `0.921`
 
-### Gemini vs Claude (current mini benchmark)
+## Current model comparison on corrected v2
 
-- Gemini baseline is stronger on this set.
-- Claude Sonnet 4.6 is much closer to the target `60%-70%` band.
-- The gap is especially visible on:
-  - `llm_judge_final`: `0.720 -> 0.617`
-  - `judge_core_answer_correct`: `0.752 -> 0.600`
-  - `exact_match`: `0.722 -> 0.613`
-  - `judge_key_point_coverage`: `0.649 -> 0.525`
+- `Claude Sonnet 4.6 (FAN key)` is currently strongest on this mini benchmark.
+- `Gemini 2.5 Flash` is second.
+- `Gemini 3.1 Pro High` is weakest on open-ended explanation quality, even though its `exact_match` is high.
+
+Key comparison:
+
+- `llm_judge_final`
+  - Gemini 2.5: `0.808`
+  - Gemini 3.1: `0.699`
+  - Claude 4.6: `0.821`
+- `judge_core_answer_correct`
+  - Gemini 2.5: `0.857`
+  - Gemini 3.1: `0.755`
+  - Claude 4.6: `0.863`
+- `exact_match`
+  - Gemini 2.5: `0.681`
+  - Gemini 3.1: `0.917`
+  - Claude 4.6: `0.917`
+- `judge_key_point_coverage`
+  - Gemini 2.5: `0.726`
+  - Gemini 3.1: `0.603`
+  - Claude 4.6: `0.776`
+
+
+## Structural breakdown by benchmark dimension
+
+The table below uses a unified comparison rule:
+
+- open-ended items use `llm_judge_final`
+- option items use `exact_match`
+- the reported average is this merged `primary_score`
+
+### By memory level
+
+- `Level 0`
+  - Gemini 2.5: `0.600` (`n=5`)
+  - Gemini 3.1: `1.000` (`n=5`)
+  - Claude 4.6: `0.800` (`n=5`)
+- `Level 1`
+  - Gemini 2.5: `0.900` (`n=10`)
+  - Gemini 3.1: `0.921` (`n=10`)
+  - Claude 4.6: `0.957` (`n=10`)
+- `Level 2`
+  - Gemini 2.5: `0.816` (`n=4`)
+  - Gemini 3.1: `0.619` (`n=4`)
+  - Claude 4.6: `0.456` (`n=4`)
+- `Level 3`
+  - Gemini 2.5: `0.722` (`n=60`)
+  - Gemini 3.1: `0.793` (`n=61`)
+  - Claude 4.6: `0.895` (`n=61`)
+
+### By reasoning structure
+
+- `single-hop`
+  - Gemini 2.5: `0.726`
+  - Gemini 3.1: `0.829`
+  - Claude 4.6: `0.682`
+- `multi-hop`
+  - Gemini 2.5: `0.786`
+  - Gemini 3.1: `0.833`
+  - Claude 4.6: `0.930`
+- `trajectory-based`
+  - Gemini 2.5: `0.584`
+  - Gemini 3.1: `0.683`
+  - Claude 4.6: `0.885`
+- `conflict-resolution`
+  - Gemini 2.5: `0.750`
+  - Gemini 3.1: `0.858`
+  - Claude 4.6: `0.827`
+
+### By question type
+
+- `retrieval`
+  - Gemini 2.5: `0.888`
+  - Gemini 3.1: `0.647`
+  - Claude 4.6: `0.689`
+- `judgment`
+  - Gemini 2.5: `0.684`
+  - Gemini 3.1: `0.921`
+  - Claude 4.6: `0.921`
+- `explanation`
+  - Gemini 2.5: `0.793`
+  - Gemini 3.1: `0.712`
+  - Claude 4.6: `0.853`
+
+### By anchor session
+
+- `D1`
+  - Gemini 2.5: `0.800`
+  - Gemini 3.1: `0.890`
+  - Claude 4.6: `1.000`
+- `D2`
+  - Gemini 2.5: `0.638`
+  - Gemini 3.1: `0.796`
+  - Claude 4.6: `0.820`
+- `D3`
+  - Gemini 2.5: `0.829`
+  - Gemini 3.1: `0.880`
+  - Claude 4.6: `0.895`
+- `D4`
+  - Gemini 2.5: `0.774`
+  - Gemini 3.1: `0.763`
+  - Claude 4.6: `0.873`
+- `D5`
+  - Gemini 2.5: `0.629`
+  - Gemini 3.1: `0.754`
+  - Claude 4.6: `0.878`
+
+### Takeaways from the structural view
+
+- The most discriminative parts of this mini benchmark are currently `Level 3`, `multi-hop`, and `trajectory-based` items.
+- Claude 4.6 leads most clearly on `Level 3`, `multi-hop`, and `trajectory-based` questions.
+- Gemini 3.1 is especially strong on `judgment`, but weaker than Claude on `explanation`.
+- Gemini 2.5 is relatively strong on `retrieval`, but weaker on later-session and trajectory-heavy items.
