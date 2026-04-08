@@ -265,6 +265,23 @@ def get_question_evidence_sessions(question: Dict[str, Any]) -> set[int]:
     return sessions
 
 
+def get_anchor_session(question: Dict[str, Any]) -> int:
+    return extract_session_index_from_dia_id(str(question.get("anchor_dia_id") or ""))
+
+
+def has_early_session_evidence(question: Dict[str, Any], min_session_gap: int = 2) -> bool:
+    """Return True if evidence_turn_ids contains at least one turn from a session
+    that is min_session_gap or more sessions before the anchor session."""
+    anchor_session = get_anchor_session(question)
+    if anchor_session <= 0:
+        return False
+    for dia_id in question.get("evidence_turn_ids", []):
+        ev_session = extract_session_index_from_dia_id(str(dia_id))
+        if ev_session > 0 and (anchor_session - ev_session) >= min_session_gap:
+            return True
+    return False
+
+
 def score_hard_core_question_candidate(
     question: Dict[str, Any],
     conversation: Dict[str, Any],
@@ -287,10 +304,19 @@ def score_hard_core_question_candidate(
         score -= 3
         reasons.append("single_session_evidence")
 
+    # Hard constraint: Level 3 must have evidence from ≥2 sessions before anchor
     if memory_level == "Level 3":
-        score += 2
+        if has_early_session_evidence(question, min_session_gap=2):
+            score += 4
+        else:
+            score -= 6
+            reasons.append("level3_no_early_session_evidence")
     elif memory_level == "Level 2":
-        score += 1
+        if len(evidence_sessions) >= 2:
+            score += 1
+        else:
+            score -= 3
+            reasons.append("level2_single_session_evidence")
     elif memory_level == "Level 1":
         score -= 2
         reasons.append("low_memory_level")
@@ -354,6 +380,9 @@ def score_final_question_candidate(question: Dict[str, Any], conversation: Dict[
 
     score = 0
     score += {"Level 3": 6, "Level 2": 4, "Level 1": 1, "Level 0": -1}.get(memory_level, 0)
+    # Hard constraint: Level 3 must have early-session evidence (≥2 sessions before anchor)
+    if memory_level == "Level 3" and not has_early_session_evidence(question, min_session_gap=2):
+        score -= 8
     if len(evidence_sessions) >= 2:
         score += 3
     elif memory_level in {"Level 2", "Level 3"}:

@@ -65,6 +65,12 @@
   - adversarial twist 必须来自对已有证据的误读、过度加权或低估，而不是向 prompt 注入新事实
 - 不要把大多数高难题都锚定在最后的感谢、最后的告别或显式总结句上。
 - 对于 Level 2 和 Level 3 题，优先使用跨 session 证据；如果题目只靠当前 session 就能回答，不应标成高 memory level。
+- 对于 Level 2 和 Level 3 题，gold_rationale 应在对话支持的情况下依赖至少 2 个不同 session 的证据。
+- 如果 Level 3 题只靠 anchor turn 或 anchor 所在 session 就能回答，则该题无效。
+- 对 trajectory-based 题，要求证据跨越至少 3 个时间点或弧线上的时刻。
+- **硬约束 — Level 3 跨 session 跨度：** 每道 Level 3 题的 `evidence_turn_ids` 必须包含至少一个来自比 anchor session 早 2 个或以上 session 的 turn（例如 anchor 在 D4 或 D5，则至少一条证据必须来自 D1 或 D2）。如果某个候选 anchor 没有这样的早期 session 证据，不要为该 anchor 生成 Level 3 题，改换 anchor 或降低 memory level。
+- **硬约束 — session_local 不可解性：** 如果一个只看 anchor 所在 session 上下文（session_local）的模型能合理答对，则该 Level 3 题无效。在确定 Level 3 题之前，先问自己："不看任何早期 session 的证据，这道题能答对吗？"如果能，则不是有效的 Level 3 题。
+- 对 Level 2 题，`evidence_turn_ids` 必须跨越至少 2 个不同 session。
 - 不要在同一个 anchor_dia_id 上生成多道本质相同的问题。
 - 如果 anchor turn 的 voice_style 直接写出了答案情绪词，则该题不合格，应换 anchor 或换问法。
 
@@ -245,6 +251,9 @@ The benchmark focuses on whether a model can use long-term dialogue history to i
 - For Level 2 and Level 3 questions, the gold_rationale should rely on evidence from at least 2 different sessions whenever the conversation supports it.
 - If a Level 3 question can be answered using only the anchor turn or only the anchor turn's session, it is invalid.
 - For trajectory-based questions, require evidence across at least 3 time points or moments in the arc.
+- **HARD CONSTRAINT — Level 3 cross-session span:** For every Level 3 question, `evidence_turn_ids` MUST include at least one turn from a session that is 2 or more sessions before the anchor session (e.g. if anchor is in D4 or D5, at least one evidence turn must come from D1 or D2). If no such early-session evidence exists for a candidate anchor, do not generate a Level 3 question for that anchor — choose a different anchor or lower the memory level.
+- **HARD CONSTRAINT — session_local unsolvability:** A Level 3 question is invalid if a model that only sees the anchor's own session context (session_local) could plausibly answer it correctly. Before finalizing a Level 3 question, ask: "Could this be answered without any evidence from earlier sessions?" If yes, it is not a valid Level 3 question.
+- For Level 2 questions, `evidence_turn_ids` must span at least 2 different sessions.
 - Do not generate multiple essentially identical questions from the same `anchor_dia_id`.
 - If the anchor turn's voice_style directly contains the answer emotion word, the question is invalid and you should choose another anchor or another formulation.
 - Evidence must not depend on future turns. `evidence_turn_ids` may include only the anchor turn and turns that occur before it, never after it.
