@@ -26,3 +26,7 @@ pipeline.checkpoint_*.py
 docs/question_generation_checkpoint_*.txt
 prompts/*.checkpoint_*.j2
 prompts/*.bak
+
+# 具体批次 generation config（只保留 example）
+configs/generation_config.*.json
+!configs/generation_config.example.json
