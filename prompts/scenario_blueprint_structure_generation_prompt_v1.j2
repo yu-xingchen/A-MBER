@@ -15,11 +15,29 @@ The blueprint should first be realistic and internally consistent, and it should
 - relation-change questions
 - cross-session reinterpretation
 
+# Multi-thread target
+- Do not build the scenario around only one issue or one clean stressor family.
+- Most scenarios should contain at least 3 active life threads across the full arc.
+- If the generation config or seed guidance implies a desired thread count, follow it. Otherwise default to 3 active threads.
+- Use a thread mix such as:
+  - one primary academic or performance thread
+  - one secondary personal or relational thread
+  - one lower-volume background pressure thread
+- Use the provided blueprint seed library to diversify thread families instead of inventing the same few stressors repeatedly.
+- Threads may involve academics, presentation pressure, peer or romance uncertainty, family requests, money, autonomy, belonging, health, scheduling, or identity pressure.
+- Do not write them as isolated topic buckets. They should overlap, interfere, and change how the student responds.
+- At least 2 moments in the full blueprint should show cross-thread interference, where one thread changes the meaning, urgency, tone, or disclosure pattern of another.
+- At least 1 background thread should appear in the first half of the scenario, not only near the end.
+- Do not let all three threads have equal weight. One should be primary, one secondary, and one lower-volume but recurrent.
+- The key evidence for any major thread must be distributed across at least 3 different sessions rather than being fully explained in one local cluster.
+- Do not let a late session explicitly translate an earlier ambiguity into a clean answer sentence. Late repair may improve understanding, but it must not fully spell out the benchmark conclusion.
+- Do not let the teacher or student give a final explicit meta-summary such as "so the real issue was..." or "I guess I was actually feeling..." for the main hard hooks.
+
 # Core design rules
 - Preserve the selected personas and make their traits matter in the interaction.
 - The teacher's `misattunement_pattern` should appear in a concrete way during the arc.
 - The teacher's `repair_style` should also appear concretely later.
-- The student's `misattunement_triggers`, `interaction_risk`, `coping_pattern`, and `expression_style` should shape how they respond across sessions.
+- The student's `misattunement_triggers`, `interaction_risk`, `coping_pattern`, `expression_style`, `face_management_style`, `help_seeking_barrier`, `disagreement_style`, and `stress_masking_style` should shape how they respond across sessions.
 - Keep the story grounded in ordinary academic interaction rather than melodrama.
 - The scenario should have clear interaction boundaries and progression, but it does not need to end in full emotional closure, full mutual understanding, or a neatly completed growth arc.
 - Vary closure patterns across scenarios. Some scenarios may end with partial repair, some with practical progress but relational residue, some with clearer improvement, and some with unresolved asymmetry. Do not default to the same ending shape every time.
@@ -50,6 +68,9 @@ Write that same profile explicitly as `global_outline.closure_profile`.
 - `global_outline.closure_profile` must be one value from the closure profile pool and should describe the dominant final-shape of the scenario.
 - Each session should have a distinct pressure, topic focus, and relationship state.
 - Each session must contain at least one meaningful local shift, not just setup material for a later payoff.
+- Every session must foreground one thread and also include at least one secondary-thread leak, interference, or residue.
+- Every session must also contain at least one low-stakes noise or chitchat mention from the seed library, such as campus logistics, weather, food, scheduling friction, device issues, or a brief social aside.
+- Most noise mentions should appear only once or twice across the full scenario and must not become the main thread unless the arc later deliberately promotes them.
 - A local shift can be emotional, relational, interpretive, or strategic, such as:
   - guardedness becoming tentative openness
   - surface agreement becoming hesitation
@@ -58,6 +79,7 @@ Write that same profile explicitly as `global_outline.closure_profile`.
 - A local shift does not need to end in resolution. It can end in partial uptake, misalignment, residue, over-compliance, stalled progress, or a fragile working compromise.
 - Each session should plant at least one concrete later-useful detail.
 - Each session should also leave at least one unresolved residue or ambiguity that could support later QA.
+- Each session must leave at least one socially meaningful ambiguity that still supports 2 plausible readings locally, even if one becomes stronger later.
 - `future_memory_to_plant` should be specific enough that it could support later QA.
 - `future_memory_to_plant` must describe observable or dialogue-realizable hooks, not private internal thoughts that would be invisible later.
 - Prefer hooks such as:
@@ -66,6 +88,14 @@ Write that same profile explicitly as `global_outline.closure_profile`.
   - a type of teacher response that later gets reinterpreted
   - a concrete factual preference, example, or procedural detail that later matters
   - a polite response that leaves unresolved residue
+  - surface-level cooperation that later turns out to be partial agreement, face-saving, or strategic narrowing
+  - a gentle correction or socially softened disagreement whose meaning becomes clearer later
+- When multiple threads are active, prefer hooks where:
+  - the student talks about one problem while another pressure source shapes the tone
+  - practical language carries hidden emotional weight from another thread
+  - a later session reinterprets an earlier response as being about more than the stated topic
+- In every session, at least one planted hook must be lower-value noise, one-off chitchat, or minor factual clutter, while the major hooks remain clear.
+- For the main hard hooks, prefer cues that require the reader to weigh competing interpretations rather than simply remember one explicit explanation.
 - `measurable_points` should emphasize benchmark-relevant targets such as:
   - near-term fact
   - long-term fact
@@ -83,6 +113,13 @@ Write that same profile explicitly as `global_outline.closure_profile`.
 - At least the first 3 sessions should each contain a locally question-worthy moment and a later-reinterpretable moment.
 - At least 2 sessions should contain an internal mismatch or reversal within that same session.
 - The mismatch or reversal should be realizable through observable interaction, not only through hidden narration.
+- At least 3 student moments across the full blueprint should be locally plausible in more than one way, with later history making one interpretation much stronger.
+- At least 3 hard-hook moments across the blueprint should remain contestable even with full history, meaning the conversation supports more than one superficially reasonable explanation and only a more careful reading favors the intended one.
+- At least 4 sessions should include mixed emotional background rather than only one clean dominant feeling.
+- Every session must include at least one:
+  - one-off low-stakes side mention
+  - brief natural chitchat
+  - logistical noise that is not central to the main arc
 - Prefer recurring themes or repeated interaction patterns when they naturally help later comparison across sessions.
 - Repeated themes should not be redundant. Their meaning, emotional weight, or relational implication should shift over time.
 - Emotional change should be noticeable across stages, but still psychologically plausible.

@@ -13,11 +13,18 @@ scripts/tts_*.py
 docs/langfuse_session_local_*.txt
 docs/langfuse_blueprint_review_*.txt
 docs/langfuse_mini_*.txt
+docs/langfuse_full_*.txt
+docs/langfuse_gold_*.txt
+docs/langfuse_hybrid_*.txt
+docs/langfuse_full_plus_*.txt
+docs/langfuse_claude46_*.txt
 docs/langfuse_exports/
+docs/tts_generated_files/
+docs/local_prune_analysis_*/
+docs/easy_items_analysis.json
 
 # 过程checkpoint和备份文件
 pipeline.checkpoint_*.py
 docs/question_generation_checkpoint_*.txt
-docs/benchmark_iteration_log_*.md
 prompts/*.checkpoint_*.j2
 prompts/*.bak

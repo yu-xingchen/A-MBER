@@ -3,7 +3,9 @@
     "Trust building -> misunderstanding with partial repair",
     "Surface stability -> hidden strain becomes visible -> cautious repair",
     "Guarded check-ins -> accumulating stress -> clearer mutual understanding",
-    "Practical support -> relational misattunement -> more careful re-engagement"
+    "Practical support -> relational misattunement -> more careful re-engagement",
+    "Multiple pressures overlap -> mixed disclosure -> cautious recalibration",
+    "Surface competence -> cross-thread strain leaks through -> more workable support pattern"
   ],
   "stage_function_candidates": [
     "plant memories",
@@ -11,7 +13,9 @@
     "create key hidden-emotion evidence",
     "introduce relation strain",
     "enable multi-hop items",
-    "support partial repair without full resolution"
+    "support partial repair without full resolution",
+    "let one thread distort the meaning of another",
+    "seed low-salience noise without changing the main arc"
   ],
   "session_theme_candidates": [
     "academic pressure",
@@ -21,7 +25,15 @@
     "family expectation spillover",
     "confidence dip after feedback",
     "schedule overload",
-    "repair after misattunement"
+    "repair after misattunement",
+    "presentation anxiety",
+    "money-related hesitation",
+    "family request avoidance",
+    "friendship ambiguity",
+    "romance excitement with caution",
+    "identity insecurity after comparison",
+    "health management spillover",
+    "club leadership overload"
   ],
   "event_type_candidates": [
     "academic_pressure",
@@ -31,7 +43,15 @@
     "support_offer",
     "partial_repair",
     "self_minimization",
-    "trust_signal"
+    "trust_signal",
+    "cross_thread_interference",
+    "background_noise",
+    "one_off_chitchat",
+    "family_pressure",
+    "financial_constraint",
+    "presentation_pressure",
+    "romance_uncertainty",
+    "identity_threat"
   ],
   "measurable_point_candidates": [
     "long-term implicit emotion",
@@ -52,6 +72,249 @@
     "cautious_trust",
     "distancing",
     "fatigue",
-    "shame"
-  ]
+    "shame",
+    "hope",
+    "ambivalence",
+    "excitement",
+    "worry",
+    "resentment",
+    "guilt",
+    "overload"
+  ],
+  "thread_count_guidance": {
+    "default_active_thread_count": 3,
+    "minimum_active_thread_count": 3,
+    "recommended_range": [3, 4],
+    "notes": [
+      "Use one primary thread, one secondary thread, and one lower-volume background thread by default.",
+      "A fourth thread is optional and should usually remain low-intensity.",
+      "Do not let thread count make the arc feel like a checklist of unrelated problems."
+    ]
+  },
+  "thread_combination_rules": {
+    "preferred_shapes": [
+      "academic_or_performance + personal_or_relational + practical_or_family_background",
+      "performance + belonging_or_identity + logistics_or_health_background",
+      "presentation_or_deadline + friendship_or_romance + money_or_family_background"
+    ],
+    "cross_thread_interference_examples": [
+      "presentation pressure makes a romance-related distraction harder to admit",
+      "family money pressure makes an academic setback feel morally heavier",
+      "friendship conflict makes neutral feedback sound more rejecting",
+      "health management or fatigue makes a student sound detached in a conversation about performance",
+      "romantic excitement coexists with guilt or fear of losing focus"
+    ]
+  },
+  "thread_pool": [
+    {
+      "thread_id": "academic_feedback_spiral",
+      "family": "academic_performance",
+      "summary": "A piece of feedback or a modest setback keeps echoing after the immediate event.",
+      "stakes": ["self-worth", "competence", "future performance"],
+      "disclosure_barrier": "The student can discuss the task more easily than the shame attached to the task.",
+      "likely_appraisals": ["threat", "self-blame", "comparison sensitivity"],
+      "likely_interference_targets": ["presentation pressure", "family expectation", "identity insecurity"],
+      "factual_hooks": ["specific assignment or rubric point", "a quoted phrase from feedback", "a revision plan"],
+      "good_for_personas": ["guarded high-achiever", "approval-seeking internalizer", "tense precision-seeker"]
+    },
+    {
+      "thread_id": "presentation_qna_pressure",
+      "family": "performance_visibility",
+      "summary": "The student is preparing to explain work publicly and fears being exposed, challenged, or imprecise.",
+      "stakes": ["public competence", "evaluation", "loss of control"],
+      "disclosure_barrier": "The student frames anxiety as wanting clarity or rigor, not as fear.",
+      "likely_appraisals": ["uncertainty", "performance threat", "need for exactness"],
+      "likely_interference_targets": ["romance uncertainty", "sleep disruption", "identity insecurity"],
+      "factual_hooks": ["specific slide or chart", "wording choice", "anticipated audience question"],
+      "good_for_personas": ["overcontrolled perfectionist", "tense precision-seeker", "ruminative analyst"]
+    },
+    {
+      "thread_id": "group_project_uneven_load",
+      "family": "peer_coordination",
+      "summary": "The student is quietly carrying more than peers and is unsure how much resentment or pushback is socially safe.",
+      "stakes": ["fairness", "reliability", "belonging"],
+      "disclosure_barrier": "Complaining risks sounding petty, difficult, or not collaborative.",
+      "likely_appraisals": ["resentment", "burden", "hesitation"],
+      "likely_interference_targets": ["friendship ambiguity", "identity insecurity", "family expectation"],
+      "factual_hooks": ["missed subtask", "deadline split", "who promised what"],
+      "good_for_personas": ["social deflector", "guarded high-achiever", "approval-seeking internalizer"]
+    },
+    {
+      "thread_id": "friendship_drift_or_conflict",
+      "family": "friendship",
+      "summary": "A friendship feels strained, unequal, or hard to read, but the student is not ready to fully frame it as conflict.",
+      "stakes": ["belonging", "loyalty", "self-image"],
+      "disclosure_barrier": "Naming the hurt directly could make it more real or make the student sound dramatic.",
+      "likely_appraisals": ["hurt", "confusion", "self-doubt"],
+      "likely_interference_targets": ["group project", "club leadership", "identity insecurity"],
+      "factual_hooks": ["missed message", "awkward interaction", "specific event invite or non-invite"],
+      "good_for_personas": ["social deflector", "sensitive tester", "guarded high-achiever"]
+    },
+    {
+      "thread_id": "romance_new_but_uncertain",
+      "family": "romance",
+      "summary": "A new romantic development brings excitement but also distraction, risk, and uncertainty.",
+      "stakes": ["reward", "exposure", "maturity image"],
+      "disclosure_barrier": "The student may feel embarrassed, distracted, or worried that this will sound unserious.",
+      "likely_appraisals": ["excitement", "worry", "guilt", "uncertainty"],
+      "likely_interference_targets": ["presentation pressure", "academic feedback spiral", "family request avoidance"],
+      "factual_hooks": ["a recent message exchange", "a plan that may happen", "a moment the student keeps replaying"],
+      "good_for_personas": ["social deflector", "sensitive tester", "approval-seeking internalizer"]
+    },
+    {
+      "thread_id": "family_expectation_pressure",
+      "family": "family",
+      "summary": "The student feels watched, compared, or morally evaluated by family expectations around achievement or responsibility.",
+      "stakes": ["approval", "comparison", "future path"],
+      "disclosure_barrier": "The student often presents this as practical pressure rather than emotional injury.",
+      "likely_appraisals": ["shame", "pressure", "ambivalence"],
+      "likely_interference_targets": ["academic performance", "money hesitation", "identity insecurity"],
+      "factual_hooks": ["a recent call or comment", "a sibling comparison", "an upcoming family conversation"],
+      "good_for_personas": ["approval-seeking internalizer", "ruminative analyst", "self-effacing striver"]
+    },
+    {
+      "thread_id": "family_request_avoidance",
+      "family": "family_autonomy",
+      "summary": "The student wants to ask a parent or guardian for something but keeps postponing the conversation.",
+      "stakes": ["autonomy", "money", "approval", "conflict avoidance"],
+      "disclosure_barrier": "The student fears sounding demanding, immature, or financially inconsiderate.",
+      "likely_appraisals": ["hesitation", "guilt", "worry"],
+      "likely_interference_targets": ["money hesitation", "romance uncertainty", "presentation pressure"],
+      "factual_hooks": ["what the student wants to ask for", "why timing feels bad", "a draft message or failed opening"],
+      "good_for_personas": ["self-effacing striver", "approval-seeking internalizer", "guarded high-achiever"]
+    },
+    {
+      "thread_id": "money_or_resource_hesitation",
+      "family": "financial",
+      "summary": "The student is managing a money-related constraint but is reluctant to make it visible.",
+      "stakes": ["dignity", "burden sensitivity", "access"],
+      "disclosure_barrier": "Money talk feels exposing or like asking for special treatment.",
+      "likely_appraisals": ["constraint", "shame risk", "self-protection"],
+      "likely_interference_targets": ["family request avoidance", "health management", "social belonging"],
+      "factual_hooks": ["missed purchase", "transport or meal choice", "application fee or materials cost"],
+      "good_for_personas": ["private burden-carrier", "self-effacing striver", "guarded high-achiever"]
+    },
+    {
+      "thread_id": "health_management_understatement",
+      "family": "health",
+      "summary": "A recurring physical or mental health issue is affecting performance, but the student minimizes it to stay low-maintenance.",
+      "stakes": ["bandwidth", "attendance", "not being a burden"],
+      "disclosure_barrier": "The student fears becoming hard to accommodate or being seen as fragile.",
+      "likely_appraisals": ["fatigue", "vulnerability", "self-erasure"],
+      "likely_interference_targets": ["academic performance", "presentation pressure", "money hesitation"],
+      "factual_hooks": ["appointment timing", "medication or rest issue", "specific symptom pattern"],
+      "good_for_personas": ["self-effacing striver", "overstimulated avoider", "guarded high-achiever"]
+    },
+    {
+      "thread_id": "sleep_and_recovery_erosion",
+      "family": "bandwidth",
+      "summary": "The student's sleep or recovery is slipping, making other threads sharper and harder to regulate.",
+      "stakes": ["stability", "irritability", "cognitive control"],
+      "disclosure_barrier": "It sounds too ordinary to justify how much it is affecting everything.",
+      "likely_appraisals": ["depletion", "fragility", "irritation"],
+      "likely_interference_targets": ["presentation pressure", "friendship conflict", "academic feedback spiral"],
+      "factual_hooks": ["late-night routine", "missed morning task", "specific tired-day consequence"],
+      "good_for_personas": ["overstimulated avoider", "overcontrolled perfectionist", "ruminative analyst"]
+    },
+    {
+      "thread_id": "club_leadership_overload",
+      "family": "leadership",
+      "summary": "The student is holding a visible responsibility and feels unable to disappoint people or step back cleanly.",
+      "stakes": ["reliability", "social image", "obligation"],
+      "disclosure_barrier": "The student does not want to sound disorganized or unable to cope.",
+      "likely_appraisals": ["overload", "resentment", "loyalty conflict"],
+      "likely_interference_targets": ["friendship drift", "group project uneven load", "sleep erosion"],
+      "factual_hooks": ["event deadline", "task delegation issue", "specific person who keeps relying on them"],
+      "good_for_personas": ["social deflector", "guarded high-achiever", "approval-seeking internalizer"]
+    },
+    {
+      "thread_id": "identity_insecurity_after_comparison",
+      "family": "identity",
+      "summary": "A comparison with a peer, sibling, or idealized standard has quietly destabilized the student's self-view.",
+      "stakes": ["specialness", "adequacy", "future identity"],
+      "disclosure_barrier": "The student fears sounding vain, immature, or fragile.",
+      "likely_appraisals": ["envy", "shame", "self-doubt"],
+      "likely_interference_targets": ["romance uncertainty", "presentation pressure", "creative evaluation"],
+      "factual_hooks": ["the comparison target", "the triggering moment", "a phrase that stuck"],
+      "good_for_personas": ["sensitive tester", "approval-seeking internalizer", "ruminative analyst"]
+    },
+    {
+      "thread_id": "creative_or_portfolio_block",
+      "family": "creative_evaluation",
+      "summary": "The student feels blocked, ordinary, or unable to trust their own taste while facing external evaluation.",
+      "stakes": ["identity", "future path", "authenticity"],
+      "disclosure_barrier": "The student often speaks in indirect or aesthetic language before naming shame directly.",
+      "likely_appraisals": ["insecurity", "frustration", "yearning"],
+      "likely_interference_targets": ["comparison insecurity", "friendship drift", "romance uncertainty"],
+      "factual_hooks": ["portfolio piece", "review comment", "draft the student abandoned"],
+      "good_for_personas": ["sensitive tester", "social deflector", "guarded high-achiever"]
+    },
+    {
+      "thread_id": "lab_or_procedural_precision_pressure",
+      "family": "precision",
+      "summary": "The student becomes hyper-specific because ambiguity feels dangerous and mistakes feel morally weighted.",
+      "stakes": ["error prevention", "wasting resources", "competence"],
+      "disclosure_barrier": "The student talks in technical detail instead of naming fear or pressure directly.",
+      "likely_appraisals": ["anxiety", "control need", "fear of burden"],
+      "likely_interference_targets": ["family expectation", "money hesitation", "presentation pressure"],
+      "factual_hooks": ["a specific number", "a protocol branch", "a tool or visualization choice"],
+      "good_for_personas": ["tense precision-seeker", "overcontrolled perfectionist", "ruminative analyst"]
+    },
+    {
+      "thread_id": "belonging_uncertainty_in_group",
+      "family": "belonging",
+      "summary": "The student is unsure whether they are genuinely included or merely tolerated in a group or setting.",
+      "stakes": ["belonging", "exclusion sensitivity", "social reading"],
+      "disclosure_barrier": "The student has only fragments, not a clean story, and fears overreacting.",
+      "likely_appraisals": ["uncertainty", "hypervigilance", "hurt"],
+      "likely_interference_targets": ["group project", "friendship drift", "identity insecurity"],
+      "factual_hooks": ["a seating moment", "an invitation ambiguity", "a message that was or was not sent"],
+      "good_for_personas": ["sensitive tester", "social deflector", "approval-seeking internalizer"]
+    },
+    {
+      "thread_id": "career_or_future_path_ambiguity",
+      "family": "future_uncertainty",
+      "summary": "The student is unsettled by not knowing which path is right and turns this into over-analysis or quiet paralysis.",
+      "stakes": ["future identity", "opportunity cost", "falling behind"],
+      "disclosure_barrier": "The student frames the issue as planning rather than grief, fear, or disappointment.",
+      "likely_appraisals": ["ambiguity", "loss sensitivity", "rumination"],
+      "likely_interference_targets": ["family expectation", "comparison insecurity", "money hesitation"],
+      "factual_hooks": ["application deadline", "internship rejection", "decision matrix or pros-cons note"],
+      "good_for_personas": ["ruminative analyst", "guarded high-achiever", "approval-seeking internalizer"]
+    }
+  ],
+  "noise_and_chitchat_pool": {
+    "design_rules": [
+      "Use low-stakes noise to make the conversation feel lived-in, not to generate benchmark anchors every time.",
+      "Most noise items should appear only once or twice.",
+      "Noise can briefly interrupt, soften, or disguise a main thread without becoming a hidden fourth major arc by accident.",
+      "A noise item may later become a distractor or minor factual hook, but should not dominate the main arc."
+    ],
+    "categories": {
+      "campus_logistics": [
+        "room change confusion",
+        "library printer issue",
+        "campus shuttle delay",
+        "study room booking problem"
+      ],
+      "small_talk": [
+        "weather affecting mood or schedule",
+        "weekend plans mentioned briefly",
+        "coffee or food comment",
+        "comment about being tired after a long day"
+      ],
+      "task_side_details": [
+        "forgotten file version",
+        "device battery or charger issue",
+        "short mention of email backlog",
+        "brief confusion about a due-time or form"
+      ],
+      "social_low_stakes": [
+        "club meeting ran long",
+        "roommate was noisy",
+        "saw someone unexpectedly on campus",
+        "minor scheduling friction with a friend"
+      ]
+    }
+  }
 }

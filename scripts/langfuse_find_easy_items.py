@@ -1,17 +1,18 @@
 """
 Find benchmark items where ALL specified runs score at or above a threshold.
-These are candidates for "too easy" items that should be avoided in generation.
+Uses concurrent fetching to speed up score retrieval.
 
 Usage:
     python scripts/langfuse_find_easy_items.py \
         --dataset-name emotion-memory-mini-s001-s005-pruned-v2-20260331 \
-        --run-names "gemini25-session-local" "gemini31-session-local" "claude46-session-local" \
-        --threshold 1.0 \
+        --run-names "run-a" "run-b" "run-c" \
+        --threshold 0.9 \
         --output-path docs/easy_items_analysis.json
 """
 import argparse
 import json
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -20,6 +21,8 @@ from langfuse import Langfuse
 from langfuse_env import get_langfuse_host, require_env
 
 load_dotenv()
+
+MAX_WORKERS = 10
 
 
 def make_langfuse_client() -> Langfuse:
@@ -35,6 +38,23 @@ def pick_effective_score(has_options: bool, scores: Dict[str, float]) -> Optiona
     return scores.get("llm_judge_final")
 
 
+def fetch_scores_for_trace(langfuse: Langfuse, trace_id: str) -> Dict[str, float]:
+    scores: Dict[str, float] = {}
+    try:
+        resp = langfuse.api.scores.get_many(trace_id=trace_id, limit=50)
+        for s in resp.data:
+            name = getattr(s, "name", None)
+            value = getattr(s, "value", None)
+            if name and value is not None:
+                try:
+                    scores[str(name)] = float(value)
+                except Exception:
+                    pass
+    except Exception as e:
+        print(f"  Warning: failed to fetch scores for trace {trace_id}: {e}")
+    return scores
+
+
 def fetch_run_scores(
     langfuse: Langfuse,
     dataset_name: str,
@@ -44,28 +64,44 @@ def fetch_run_scores(
     dataset = langfuse.get_dataset(dataset_name)
     items_by_id = {item.id: item for item in dataset.items}
     dataset_run = langfuse.get_dataset_run(dataset_name=dataset_name, run_name=run_name)
+    run_items = dataset_run.dataset_run_items
+
+    # Fetch all scores concurrently
+    trace_id_to_item_id: Dict[str, str] = {
+        item.trace_id: item.dataset_item_id
+        for item in run_items
+        if item.trace_id
+    }
+
+    trace_scores: Dict[str, Dict[str, float]] = {}
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        future_to_trace = {
+            executor.submit(fetch_scores_for_trace, langfuse, tid): tid
+            for tid in trace_id_to_item_id
+        }
+        done = 0
+        for future in as_completed(future_to_trace):
+            tid = future_to_trace[future]
+            trace_scores[tid] = future.result()
+            done += 1
+            if done % 20 == 0:
+                print(f"  {done}/{len(trace_id_to_item_id)} traces fetched...")
 
     results: Dict[str, Dict[str, Any]] = {}
-    for run_item in dataset_run.dataset_run_items:
+    for run_item in run_items:
         dataset_item = items_by_id.get(run_item.dataset_item_id)
         if dataset_item is None:
             continue
 
-        trace = langfuse.api.trace.get(run_item.trace_id)
-        scores: Dict[str, float] = {}
-        for score in trace.scores or []:
-            name = getattr(score, "name", None)
-            value = getattr(score, "value", None)
-            if name and value is not None:
-                try:
-                    scores[str(name)] = float(value)
-                except Exception:
-                    pass
-
+        scores = trace_scores.get(run_item.trace_id, {})
         input_payload = getattr(dataset_item, "input", {}) or {}
         metadata = getattr(dataset_item, "metadata", {}) or {}
+        expected_output = getattr(dataset_item, "expected_output", {}) or {}
         has_options = bool(input_payload.get("options"))
-        effective_score = pick_effective_score(has_options, scores)
+
+        memory_level = metadata.get("memory") or metadata.get("memory_level") or ""
+        if isinstance(memory_level, str) and memory_level.isdigit():
+            memory_level = f"Level {memory_level}"
 
         results[run_item.dataset_item_id] = {
             "dataset_item_id": run_item.dataset_item_id,
@@ -73,13 +109,13 @@ def fetch_run_scores(
             "question_text": input_payload.get("question_text"),
             "question_type": metadata.get("qtype") or metadata.get("question_type"),
             "content_type": metadata.get("content") or metadata.get("content_type"),
-            "memory_level": metadata.get("memory") or metadata.get("memory_level"),
+            "memory_level": memory_level,
             "reasoning_structure": metadata.get("reasoning") or metadata.get("reasoning_structure"),
             "anchor_dia_id": metadata.get("anchor_dia_id"),
             "has_options": has_options,
-            "gold_answer": (getattr(dataset_item, "expected_output", {}) or {}).get("gold_answer"),
-            "gold_rationale": (getattr(dataset_item, "expected_output", {}) or {}).get("gold_rationale"),
-            "effective_score": effective_score,
+            "gold_answer": expected_output.get("gold_answer"),
+            "gold_rationale": expected_output.get("gold_rationale"),
+            "effective_score": pick_effective_score(has_options, scores),
             "scores": scores,
         }
 
@@ -90,7 +126,6 @@ def analyze_easy_items(
     run_score_maps: List[Tuple[str, Dict[str, Dict[str, Any]]]],
     threshold: float,
 ) -> Dict[str, Any]:
-    # Collect all item IDs across all runs
     all_item_ids = set()
     for _, score_map in run_score_maps:
         all_item_ids.update(score_map.keys())
@@ -148,7 +183,6 @@ def analyze_easy_items(
     easy_items.sort(key=lambda x: (-x["mean_score"], x["question_id"] or ""))
     partial_items.sort(key=lambda x: (-x["mean_score"], x["question_id"] or ""))
 
-    # Breakdown of easy items by dimension
     def breakdown(items: List[Dict[str, Any]], key: str) -> Dict[str, int]:
         counts: Dict[str, int] = defaultdict(int)
         for item in items:
@@ -173,8 +207,8 @@ def analyze_easy_items(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Find items where all runs score above threshold.")
     parser.add_argument("--dataset-name", required=True)
-    parser.add_argument("--run-names", nargs="+", required=True, help="One or more run names to compare")
-    parser.add_argument("--threshold", type=float, default=1.0, help="Score threshold (default: 1.0 = perfect score)")
+    parser.add_argument("--run-names", nargs="+", required=True)
+    parser.add_argument("--threshold", type=float, default=0.9)
     parser.add_argument("--output-path", default="docs/easy_items_analysis.json")
     args = parser.parse_args()
 
@@ -195,10 +229,10 @@ def main() -> None:
 
     print(f"\nTotal items: {result['total_items']}")
     print(f"Easy items (all runs >= {args.threshold}): {result['easy_item_count']} ({result['easy_item_pct']}%)")
-    print(f"\nBy question type: {result['easy_by_question_type']}")
+    print(f"By question type: {result['easy_by_question_type']}")
     print(f"By memory level:  {result['easy_by_memory_level']}")
     print(f"By reasoning:     {result['easy_by_reasoning']}")
-    print(f"\nSaved to: {output_path}")
+    print(f"Saved to: {output_path}")
 
 
 if __name__ == "__main__":

@@ -49,6 +49,7 @@ def build_dataset_item_input(unit: Dict[str, Any]) -> Dict[str, Any]:
         "benchmark_views": {
             "session_local_context": unit["benchmark_views"].get("session_local_context", []),
             "full_history_context": unit["benchmark_views"].get("full_history_context", []),
+            "gold_evidence_context": unit.get("history_evidence", []),
             "modality_conditioned_views": unit["benchmark_views"].get("modality_conditioned_views"),
         },
     }

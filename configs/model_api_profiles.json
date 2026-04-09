@@ -23,6 +23,24 @@
       "api_key_env": "FANZHONGZHUAN_API_KEY",
       "base_url": "https://api.zhongzhuan.win/v1",
       "base_url_env": ""
+    },
+    "fanzhongzhuan_claude_sonnet46": {
+      "model": "claude-sonnet-4-6",
+      "api_key_env": "FANZHONGZHUAN_API_KEY",
+      "base_url": "https://api.zhongzhuan.win/v1",
+      "base_url_env": ""
+    },
+    "redbear_qwen_plus": {
+      "model": "qwen-plus",
+      "api_key_env": "REDBEAR_API_KEY",
+      "base_url": "http://1.13.92.185:28080/v1",
+      "base_url_env": ""
+    },
+    "small_qwen": {
+      "model": "qwen2.5-14b-instruct-awq",
+      "api_key_env": "SMALL_API_KEY",
+      "base_url": "http://175.27.131.196:9090/v1",
+      "base_url_env": ""
     }
   }
 }

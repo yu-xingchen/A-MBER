@@ -143,6 +143,17 @@ You are generating benchmark questions from a structured long-horizon psychologi
 Create questions for a memory-based affective benchmark.
 The benchmark focuses on whether a model can use long-term dialogue history to interpret the student's current emotional state or retrieve relevant factual information.
 
+# Core discriminative constraints
+- `session_local` must support at least one strong but wrong interpretation.
+- `gold_evidence` must make the correct answer clearly recoverable by correcting that wrong local interpretation.
+- Do not make late explicit-summary turns, single-turn explicit suggestions, or directly copyable facts the main source of hard questions.
+
+# Core selection priority
+- Prefer questions built on socially meaningful behavior rather than only on explicit emotion wording.
+- Prefer hooks where local context makes one reading look reasonable, but earlier evidence reveals a different social meaning or mechanism.
+- If a question can be answered from the current session by generic sentiment reading alone, it is too easy.
+- If a question can be answered from the full history by simply locating one explicit explanatory recap, it is too easy.
+
 # IMPORTANT PRINCIPLE
 - The benchmark model only sees the conversation turns and any attached modality metadata such as voice_style, not the hidden event script.
 - Therefore:
@@ -182,16 +193,15 @@ The benchmark focuses on whether a model can use long-term dialogue history to i
 - If `question_plan.discouraged_anchor_dia_ids` is present, use those anchors only as backfill when the preferred pool cannot satisfy coverage or validity constraints.
 - If `question_plan.avoid_anchor_dia_ids` is present, avoid centering new questions on those anchors unless absolutely necessary to satisfy the phase plan.
 - Treat annotation results and blueprint-planted hooks as a prioritization guide for question selection.
-- Prefer converting the strongest planted hooks into questions, especially when they involve:
-  - within-session stance shift
-  - cross-session reinterpretation
-  - teacher misattunement and its aftermath
-  - partial repair with lingering residue
-  - repeated motifs whose meaning changes
-  - relation instability or relation change
+- Prefer converting the strongest planted hooks into questions, especially when they come from one of these three hook families:
+  - early misattunement or mismatch that leaves a later residue or misreading
+  - the same surface wording, politeness, or procedural language being reinterpreted across sessions
+  - apparent cooperation or compliance whose true meaning changes over time
+- For the hardest questions, prefer asking about the mechanism, path, blockage, or repair process rather than the final outcome statement itself.
+- For the hardest questions, prefer asking which explanation is better supported, which mechanism is most decisive, or which earlier interaction most changed the meaning of the current line.
 - Downweight anchors whose main function is to explicitly summarize growth, reduced anxiety, improved trust, gratitude, or relationship repair in already answer-like language.
 - Such explicit summary turns may still be used for a small number of control, calibration, or contrastive items, but they should not dominate the hardest questions.
-- For the hardest questions, prefer asking about the mechanism, path, blockage, or repair process that led to the outcome, rather than the final outcome statement itself.
+- Do not let a hard question depend mainly on one late explicit recap turn, even if that turn is concise and realistic.
 - Write question text so it can stand on its own when the evaluation system supplies context separately.
 - Do not cite turn IDs, session IDs, or hidden-history hints inside the question text.
 - Do not write wording such as `considering D1:6 and D1:8`, `as seen in Session 1`, or `based on D2:4`.
@@ -199,15 +209,16 @@ The benchmark focuses on whether a model can use long-term dialogue history to i
 - In longer conversations, do not spread long-term questions evenly just because there are more turns. Prefer to place the strongest trajectory, repair, growth, and generalization questions in later sessions where enough history has accumulated.
 - In earlier sessions, prioritize control items such as instant emotion, near-term fact, and early pattern-establishment questions.
 - Extra question budget in longer conversations should come from genuinely new memory signals, not from multiple rephrasings of the same relational shift.
-- Do not generate multiple questions that all test the same closure signal, such as repeated goodbyes, thank-you exchanges, or increasingly relaxed sign-offs, unless they clearly probe different underlying inferences.
+- Do not generate multiple questions that all test the same downstream summary signal or closure signal unless they clearly probe different inferences.
 - Keep retrieval questions selective. Prefer facts that matter for later emotional interpretation or long-term memory, not every local factual detail.
+- For retrieval, prefer only the multi-turn form: aggregation, contrast, or discriminating among similar earlier details.
+- Avoid retrieval questions whose answer is directly copyable from one nearby turn in the anchor session.
 - Prioritize long-term implicit emotion items.
 - Include factual control items and instant emotion control items.
 - Include a smaller set of diagnostic and robustness items.
 - Do not let nearly all high-value questions cluster in the final portion of the conversation. Early and middle sessions should also contribute genuinely benchmark-worthy questions, not only control items.
 - Do not generate multiple questions that merely rephrase the same underlying hook, anchor, or relation shift. If two questions rely on the same hook, they must test clearly different abilities and use materially different evidence.
 - Apply hook-level deduplication, not just anchor-level deduplication.
-- If multiple turns all mainly express the same downstream summary signal, such as "repair succeeded", "trust improved", "I feel less anxious", or "this helped a lot", select at most one as a major question anchor unless another item tests a clearly different capability.
 - If a later explicit-summary turn and an earlier mechanism-building turn support the same hook, prefer the earlier mechanism-building turn for a hard item.
 - For adversarial items, use one of:
   - pseudo_relevant_history
@@ -229,24 +240,10 @@ The benchmark focuses on whether a model can use long-term dialogue history to i
   - the adversarial twist must come from misreading, over-weighting, or under-weighting existing evidence, not from injecting new facts into the prompt
 - Do not anchor most hard questions on final gratitude, final goodbye, or explicit summary turns.
 - Prefer hard questions anchored in the moments that created, complicated, concealed, or partially repaired the problem, rather than later turns that explicitly summarize the outcome.
-- In particular, prioritize anchors involving:
-  - first mismatch with abstract guidance
-  - repeated concrete-example seeking
-  - polite but strained pushback
-  - reluctance to seem difficult or ungrateful
-  - explicit creation of a communication tool or strategy
-  - moments where Leo's stance changes before he fully summarizes why
-- Prefer questions of the form:
+- Prefer explanation questions in only these two families:
   - why this reaction emerged here
-  - what this reveals about a previously hidden pattern
-  - how a repair attempt changed the meaning of an earlier moment
-  - why the student held something back earlier
-  - what concrete mechanism reduced the student's difficulty
-- Deprioritize questions of the form:
-  - what does this final gratitude mean
-  - what does this closing confidence mean
-  - what is the student's final overall feeling
-  unless they are serving as a small number of contrastive or calibration items.
+  - how an earlier interaction changed the meaning of the current line or behavior
+- Deprioritize outcome-summary questions unless they serve as a small number of contrastive or calibration items.
 - For Level 2 and Level 3 questions, prefer cross-session evidence. If the question can be answered from the anchor session alone, do not label it as high memory level.
 - For Level 2 and Level 3 questions, the gold_rationale should rely on evidence from at least 2 different sessions whenever the conversation supports it.
 - If a Level 3 question can be answered using only the anchor turn or only the anchor turn's session, it is invalid.
@@ -257,12 +254,19 @@ The benchmark focuses on whether a model can use long-term dialogue history to i
 - Do not generate multiple essentially identical questions from the same `anchor_dia_id`.
 - If the anchor turn's voice_style directly contains the answer emotion word, the question is invalid and you should choose another anchor or another formulation.
 - Evidence must not depend on future turns. `evidence_turn_ids` may include only the anchor turn and turns that occur before it, never after it.
+- For hard questions, avoid evidence sets that become trivial because one of the cited turns explicitly explains the intended answer in plain benchmark language.
 - For explanation questions, do not ask only for paraphrase. They should require why/how interpretation, causal linkage, or trajectory reasoning.
 - Avoid explanation questions that can score full credit by restating the anchor turn alone.
-- For retrieval questions, avoid single-turn direct extraction whenever a multi-turn aggregation or fine distinction question is available.
+- Avoid explanation questions where a generic answer such as "the student is guarded and minimizing" would already earn near-full credit without citing the earlier interaction pattern that made this reaction intelligible.
+- For explanation items, require at least one concrete interactional mechanism, not only a broad personality summary.
+- Prefer explanation items in a discrimination form when possible: which of 2 plausible mechanisms better explains the current reaction, and why.
 - For judgment questions with options, use semantically plausible distractors rather than obviously irrelevant ones.
+- For judgment questions, make the strongest distractor the answer that would look best under `session_local` alone.
+- For judgment questions, prefer options that contrast nearby social meanings that are easy to confuse locally, such as genuine agreement vs face-saving agreement, practical focus vs emotional deflection, or relief vs controlled compliance.
+- For hard judgment questions, make at least one distractor the answer that still looks plausible even under `full_history` if the reader overweights an explicit recap or reads the trajectory too simplistically.
 - If an anchor turn already explicitly states the emotional conclusion, relational conclusion, or growth summary, do not automatically promote it to a Level 3 item. First ask whether an earlier, less explicit hook would better test memory and inference.
 - If a question can be rewritten from an outcome-summary question into a path-to-outcome question using earlier evidence, prefer the path-to-outcome version.
+- For hard items, prefer question stems that ask for the strongest, most decisive, or better-supported explanation over stems that merely ask for any reasonable explanation.
 
 # For each question, output:
 1. question_id
@@ -328,6 +332,9 @@ Each item must follow this format:
 - If annotation and event-plan hooks disagree with a tempting but shallow anchor, prefer the hook-backed anchor unless the hook-backed turn is clearly unusable from dialogue evidence alone.
 - A benchmark-quality question should usually test the path to the outcome, not just the final stated outcome.
 - A benchmark-quality hard question should usually become harder, not easier, when the final summary sentence is removed.
+- If removing all earlier-session evidence would still leave the correct answer obviously strongest, the question is too easy and should be replaced.
+- If a local-context model could answer correctly by relying on generic sentiment, direct wording overlap, or one explicit suggestion in the anchor session, the question is too easy and should be replaced.
+- If a full-history model could answer correctly by relying on one explicit late recap, one clear closing statement, or one directly spelled-out causal sentence, the question is too easy and should be replaced.
 
 # Inputs
 [INSERT CONVERSATION JSON]

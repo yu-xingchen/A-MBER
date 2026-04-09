@@ -115,19 +115,35 @@ You are generating a long-horizon psychological teacher-student benchmark dialog
 - Follow the provided personas, global outline, session scripts, event plan, and emotion arc.
 - Optimize for benchmark usefulness, not just everyday realism.
 - The dialogue should be psychologically coherent, somewhat dramatized when useful, and rich in evidence for later QA.
+- Student wording should reflect `expression_style`, `coping_pattern`, `misattunement_triggers`, `interaction_risk`, `face_management_style`, `help_seeking_barrier`, `disagreement_style`, and `stress_masking_style`, so different students do not all hide strain the same way.
 
 # What makes a good conversation here
 - Each session needs a local shift, not just setup.
 - Session 1 must already contain one small but legible shift or residue.
 - At least 2 sessions should contain a within-session mismatch or reversal.
 - Early and middle sessions must already support fact, emotion, relation, and interpretation questions.
+- At least 3 student turns across the whole conversation should be locally underdetermined: in their own session they should support more than one plausible reading, but earlier sessions should make one reading clearly stronger.
+- Every session must realize one foregrounded thread and at least one secondary-thread leak, interference, or residue from the blueprint.
+- Every session must contain at least one low-stakes noise or chitchat moment that is not central to the main arc.
+- Most noise or chitchat moments should appear only once or twice in the whole conversation rather than becoming repeated mini-arcs.
 - Show change through behavior rather than explicit self-summary:
   - more or less specificity
   - accepting help vs accepting with reservation
   - correcting the teacher vs letting a misreading pass
   - shorter, longer, flatter, or more qualified replies
   - moving between procedural talk and more personal meaning
-- Repeated wording or patterns may return, but their meaning should shift over time.
+- Let the student's social behavior itself carry signal:
+  - polite agreement that is not full agreement
+  - soft correction rather than blunt contradiction
+  - face-saving phrasing that protects both people
+  - practical wording that hides exposure, shame, or disappointment
+  - quick topic shifts when the teacher gets close to the vulnerable layer
+- Repeated wording or patterns must return in at least some places with shifted meaning over time.
+- Let earlier concrete examples, analogies, or procedural requests echo later in a changed relational or emotional meaning.
+- Prefer benchmark-friendly ambiguity over neat explicit resolution: the current session should often sound interpretable on its own, but not fully decidable without the remembered history.
+- Do not concentrate the decisive evidence for a hard hook inside one short stretch of dialogue. For major threads, spread the useful evidence across at least 3 sessions.
+- Do not let late sessions decode earlier ambiguity in a fully explicit way. A late turn may sharpen, complicate, or partially repair the meaning, but it should not read like an answer key.
+- For at least several hard-hook moments, preserve 2 plausible explanations locally and avoid fully collapsing them into one explicit interpretation even when the dialogue reaches the end.
 
 # Closure profile
 - Realize the dialogue so that it matches `global_outline.closure_profile`.
@@ -146,7 +162,12 @@ You are generating a long-horizon psychological teacher-student benchmark dialog
   - "this was empowering"
   - "I trust this process now"
 - For late sessions, prefer residue to appear through brevity, qualified acceptance, resumed formality, narrowed cooperation, or selective silence rather than direct summaries.
+- Do not let the final session contain many turns that straightforwardly state the lesson learned, the emotional improvement, or the exact practical takeaway in benchmark-answer language.
+- Do not let the final session contain direct interpretive recap lines that fully explain the student's earlier social behavior, hidden motive, or emotional mechanism.
+- Avoid having the teacher's latest suggestion be directly copyable into an easy retrieval question. When practical tools are discussed, spread the relevant setup, hesitation, and later uptake across multiple sessions rather than packaging the answer in one local exchange.
+- Do not make the student's politeness automatically mean comfort, agreement, or relief. Sometimes politeness should function as face-management, deflection, or a softened correction.
 - For open-ended / reflective teachers, do not spend too many consecutive turns using the same exploratory question shape. Vary between reflection, clarification, limited structure, and concrete follow-up.
+- For hard-hook turns, prefer nearby competing readings such as genuine agreement vs face-saving agreement, practical focus vs deflection, or relief vs controlled compliance.
 
 # IMPORTANT OUTPUT RULES
 You must output a single JSON object only.

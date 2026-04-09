@@ -13,6 +13,8 @@ Primary dimensions:
      - 0.5 = partially correct or too vague
      - 0.25 = weakly related but misses the key claim
      - 0.0 = incorrect
+   - For long-memory or explanation questions, do NOT give a high score to an answer that only gives the right broad vibe while missing the specific historical mechanism that makes the gold answer correct.
+   - If several explanations are superficially plausible, do NOT give a high score unless the answer identifies why the gold explanation is better supported than the main alternative.
 
 2. key_point_coverage (high importance)
    - Measures how many key_explanation_points are covered.
@@ -35,6 +37,8 @@ Secondary dimensions:
      - 0.5 = broadly aligned but missing a key reasoning step
      - 0.25 = weak alignment
      - 0.0 = inconsistent
+   - If the gold answer depends on a particular earlier mismatch, repair, reinterpretation, or cross-session causal link, an answer that omits that dependency should score low here even if the local interpretation sounds plausible.
+   - If the gold answer depends on weighing competing explanations, an answer that names the gold one but does not rule out or distinguish the strongest rival explanation should score only moderate here.
 
 4. unsupported_claims (penalty-sensitive, lower importance than correctness)
    - Measures whether the answer adds unsupported claims, hallucinations, or contradictions.
@@ -74,6 +78,12 @@ Additional judging rules:
 - Do not reward unsupported claims even if part of the answer is correct.
 - If the answer is concise but correct, do not penalize brevity.
 - If the answer misses a key historical dependency in a long-memory question, reduce both core_answer_correct and rationale_alignment appropriately.
+- For explanation questions, generic descriptions such as "the student is guarded", "the student is stressed", or "the student is minimizing" are not enough for high scores unless the answer explains what earlier interaction pattern makes that interpretation correct here.
+- For explanation or judgment questions that hinge on competing readings, generic answers such as "the student is guarded", "the student is stressed", or "the student is minimizing" are not enough for high scores unless the answer explains why that reading is stronger than the main competing interpretation.
+- For gold-evidence evaluation, hold the answer to a stricter standard: if the supplied evidence should allow a more specific answer and the model still stays at a shallow local reading, lower key_point_coverage and rationale_alignment noticeably.
+- If the model clearly selects the correct option semantically but answers with the full option text instead of the letter, do not treat that as incorrect in your open-ended judgment.
+- If the model gives the right letter or option text for a judgment item but cannot justify it in the open-ended comment, core_answer_correct may still be high, but key_point_coverage and rationale_alignment should stay lower.
+- If the answer mainly repeats a late explicit recap, summary line, or surface conclusion without reconstructing the earlier interactional path that made it true, cap core_answer_correct and rationale_alignment below the top band.
 
 Return JSON only with this schema:
 {

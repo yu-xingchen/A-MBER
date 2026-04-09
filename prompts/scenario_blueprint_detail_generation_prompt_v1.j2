@@ -9,6 +9,14 @@ Return exactly one JSON object with these top-level keys:
 Expand the structural blueprint into a usable event plan and emotion arc.
 These artifacts should support later question writing, but they should still read like a natural scenario plan rather than an over-engineered test specification.
 
+# Multi-thread expansion target
+- Treat the scenario as a weave of at least 3 active life threads, not as one problem repeated for many sessions.
+- Keep one thread foregrounded in a given session, but let another thread distort timing, urgency, defensiveness, disclosure, or interpretation.
+- Prefer event plans where the student is sometimes talking about one stated issue while another unstated or background issue shapes the interaction.
+- Use the thread and noise material in the blueprint seed library to reduce repetition across scenarios.
+- For every major hard-hook thread, distribute decisive evidence across at least 3 sessions.
+- Do not allow one late event to fully decode an earlier ambiguous pattern in benchmark-answer language.
+
 # Closure profile alignment
 - Read the closure shape implied by `global_outline`, especially the final stage.
 - Keep the event plan and emotion arc consistent with that chosen closure profile.
@@ -29,6 +37,9 @@ These artifacts should support later question writing, but they should still rea
   - an initial stance or surface position
   - a complicating moment, mismatch, or shift
   - an ending state that is meaningfully different but not fully resolved
+- Every session must include one foregrounded thread and at least one secondary-thread leak, interference, or residue.
+- Across the full event plan, all 3 active threads should appear more than once.
+- A background thread can stay lower-volume, but it should still leave observable traces in multiple sessions.
 - The ending state may be partially improved, strategically adjusted, emotionally mixed, or still misaligned; do not assume every session should move toward clean resolution.
 - Each event should be concrete enough to matter later for at least one of:
   - factual retrieval
@@ -37,19 +48,33 @@ These artifacts should support later question writing, but they should still rea
   - conflict or repair interpretation
 - Some events can be simple local anchors, but not all of them.
 - Include a few events whose significance becomes clearer only after later sessions.
+- For hard hooks, prefer event chains where later sessions sharpen or reweight the interpretation, but do not fully settle it into one explicit summary.
 - At least one event in each session should be locally question-worthy even before any later-session reinterpretation.
 - At least one event in at least 3 different sessions should become more diagnostic when later history is added.
 - Repeated motifs are welcome when they help show change or reinterpretation across time.
 - Repeated motifs should not always culminate in a tidy payoff. Sometimes a motif should stabilize, partially soften, recur in altered form, or remain diagnostically unresolved by the end.
 - Avoid making every important event fully explicit the first time it appears.
 - Prefer event descriptions that can later be realized through observable dialogue behavior, wording choices, repeated requests, correction patterns, hedging, narrowing, withdrawal, or selective agreement.
+- Prefer event descriptions where a locally reasonable reading can later be corrected or deepened by remembered interaction history.
+- Prefer event descriptions where at least 2 interpretations remain superficially reasonable even with full history, but one becomes better supported when the reader tracks the social mechanism carefully.
 - Do not rely on event descriptions that mainly state invisible internal thoughts unless they will be translated into clear dialogue-level traces later.
+- Include at least 2 cross-thread interference events in the full plan, for example:
+  - academic pressure making a personal issue harder to disclose
+  - family or money stress making the student sound more rigid in a school conversation
+  - a positive personal development coexisting with performance anxiety or guilt
+  - one thread appearing resolved locally while another thread keeps the student cautious
+- Every session must include at least one low-stakes noise or chitchat event, such as weather, timing trouble, room changes, device problems, food, transit, or brief social side remarks.
+- These noise events must usually be low emotional significance, background only, and often usable as distractors rather than central anchors.
+- Noise should make the conversation feel natural and slightly messy, not random or incoherent.
 
 # Tension and repair rules
 - Tension events should concretely express the teacher's `misattunement_pattern` and the student's `misattunement_triggers`.
 - Repair events should concretely express the teacher's `repair_style` and the student's `interaction_risk`.
+- Let some event descriptions hinge on social meaning rather than only task meaning, such as face-saving agreement, indirect correction, softened pushback, selective disclosure, or relief hidden inside procedural language.
+- For hard events, include at least one plausible competing explanation that should remain tempting to a model reading too quickly.
 - Repair should change the interaction in a meaningful way, not just restore surface politeness.
 - Repair should still leave some residue, caution, or asymmetry that can support later questions; do not make repair immediately complete.
+- Repair must not end by directly naming the hidden motive, exact emotional conclusion, or full causal explanation behind the student's earlier behavior.
 - Vary repair outcomes across scenarios. A repair attempt may work well, work partially, work only practically, expose a new mismatch, or help in one domain while leaving another unresolved.
 
 # Interaction-target rules
@@ -65,6 +90,8 @@ These artifacts should support later question writing, but they should still rea
 - Emotional movement across stages should be clear enough to distinguish, but not exaggerated.
 - Do not keep early-stage emotion flat and save the first real shift for the ending.
 - Earlier and middle sessions should already show distinguishable movement in stance, confidence, guardedness, trust, resentment, relief, or other affective dimensions.
+- Mixed emotions are desirable when the thread structure supports them. For many stages, prefer 2-3 compatible affective states rather than one flat label.
+- At least 4 sessions must include mixed emotions partly because of thread interference, not only because one single topic is emotionally complicated.
 - `implicit_emotions_to_seed` should be emotions that later questions could infer from several turns or sessions, not just one confession.
 - Keep emotion labels short and affective.
 - The final stage does not need to represent complete closure. It should represent the scenario's current equilibrium, which may be improved, mixed, fragile, or still partially unresolved.

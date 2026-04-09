@@ -3,8 +3,10 @@ import json
 import os
 import re
 import sys
+import math
 from pathlib import Path
-from typing import Any, Dict, List
+from collections import Counter, defaultdict
+from typing import Any, Dict, List, Tuple
 
 from dotenv import load_dotenv
 from langfuse import Langfuse
@@ -68,6 +70,224 @@ def render_context(turns: List[Dict[str, Any]]) -> str:
             line += f"\nvoice_style: {voice_style}"
         lines.append(line)
     return "\n\n".join(lines)
+
+
+def retrieval_normalize_text(value: str) -> str:
+    value = value.lower()
+    value = re.sub(r"\s+", " ", value)
+    return value.strip()
+
+
+def retrieval_tokenize(value: str) -> List[str]:
+    return re.findall(r"[a-z0-9]+", retrieval_normalize_text(value))
+
+
+def build_query_text(input_data: Dict[str, Any]) -> str:
+    parts = [
+        input_data.get("question_text", ""),
+        ((input_data.get("anchor") or {}).get("text") or ""),
+        " ".join(input_data.get("options", []) or []),
+    ]
+    return " ".join(part for part in parts if part).strip()
+
+
+def turn_signature(turn: Dict[str, Any]) -> Tuple[str, str, str]:
+    return (
+        str(turn.get("timestamp") or ""),
+        str(turn.get("speaker") or ""),
+        str(turn.get("text") or ""),
+    )
+
+
+def render_turn_for_retrieval(turn: Dict[str, Any]) -> str:
+    speaker = str(turn.get("speaker") or "")
+    text = str(turn.get("text") or "")
+    voice_style = str(turn.get("voice_style") or "")
+    return f"{speaker} {text} {voice_style}".strip()
+
+
+def build_char_ngrams(value: str, n: int = 3) -> Counter[str]:
+    text = retrieval_normalize_text(value)
+    if len(text) < n:
+        return Counter([text]) if text else Counter()
+    return Counter(text[i : i + n] for i in range(len(text) - n + 1))
+
+
+def cosine_counter(a: Counter[str], b: Counter[str]) -> float:
+    if not a or not b:
+        return 0.0
+    dot = sum(a[key] * b.get(key, 0) for key in a)
+    if dot <= 0:
+        return 0.0
+    norm_a = math.sqrt(sum(v * v for v in a.values()))
+    norm_b = math.sqrt(sum(v * v for v in b.values()))
+    if norm_a == 0 or norm_b == 0:
+        return 0.0
+    return dot / (norm_a * norm_b)
+
+
+def min_max_normalize(values: List[float]) -> List[float]:
+    if not values:
+        return []
+    lo = min(values)
+    hi = max(values)
+    if hi - lo < 1e-9:
+        if hi <= 0:
+            return [0.0 for _ in values]
+        return [1.0 for _ in values]
+    return [(value - lo) / (hi - lo) for value in values]
+
+
+def bm25_lite_scores(query_text: str, documents: List[str]) -> List[float]:
+    query_tokens = retrieval_tokenize(query_text)
+    if not query_tokens or not documents:
+        return [0.0 for _ in documents]
+
+    doc_tokens = [retrieval_tokenize(doc) for doc in documents]
+    doc_lens = [len(tokens) for tokens in doc_tokens]
+    avg_doc_len = sum(doc_lens) / len(doc_lens) if doc_lens else 1.0
+    df: Counter[str] = Counter()
+    for tokens in doc_tokens:
+        for token in set(tokens):
+            df[token] += 1
+
+    k1 = 1.2
+    b = 0.75
+    scores: List[float] = []
+    for tokens, doc_len in zip(doc_tokens, doc_lens):
+        tf = Counter(tokens)
+        score = 0.0
+        for token in query_tokens:
+            if tf[token] == 0:
+                continue
+            idf = math.log(1 + (len(documents) - df[token] + 0.5) / (df[token] + 0.5))
+            denom = tf[token] + k1 * (1 - b + b * (doc_len / max(avg_doc_len, 1.0)))
+            score += idf * ((tf[token] * (k1 + 1)) / max(denom, 1e-9))
+        scores.append(score)
+    return scores
+
+
+def dense_lite_scores(query_text: str, documents: List[str]) -> List[float]:
+    query_vector = build_char_ngrams(query_text)
+    doc_vectors = [build_char_ngrams(doc) for doc in documents]
+    return [cosine_counter(query_vector, doc_vector) for doc_vector in doc_vectors]
+
+
+def hybrid_rank(
+    query_text: str,
+    documents: List[str],
+    sparse_weight: float,
+    dense_weight: float,
+) -> List[float]:
+    sparse_scores = min_max_normalize(bm25_lite_scores(query_text, documents))
+    dense_scores = min_max_normalize(dense_lite_scores(query_text, documents))
+    return [
+        sparse_weight * sparse_score + dense_weight * dense_score
+        for sparse_score, dense_score in zip(sparse_scores, dense_scores)
+    ]
+
+
+def infer_session_key(turn: Dict[str, Any]) -> str:
+    timestamp = str(turn.get("timestamp") or "")
+    if "T" in timestamp:
+        return timestamp.split("T", 1)[0]
+    return timestamp or "session_unknown"
+
+
+def build_fallback_windows(turns: List[Dict[str, Any]], radius: int = 2) -> List[List[Dict[str, Any]]]:
+    windows: List[List[Dict[str, Any]]] = []
+    for index in range(len(turns)):
+        start = max(0, index - radius)
+        end = min(len(turns), index + radius + 1)
+        windows.append(turns[start:end])
+    return windows
+
+
+def build_hybrid_session_first_context(
+    *,
+    input_data: Dict[str, Any],
+    benchmark_views: Dict[str, Any],
+    modality_views: Any,
+    session_top_k: int,
+    window_top_k: int,
+    final_window_top_k: int,
+    sparse_weight: float,
+    dense_weight: float,
+) -> List[Dict[str, Any]]:
+    if modality_views:
+        condition_payload = next(iter(modality_views.values()))
+        full_history_turns = condition_payload["full_history_context"]
+        retrieval_candidates = condition_payload.get("retrieval_candidates") or build_fallback_windows(full_history_turns)
+    else:
+        full_history_turns = benchmark_views["full_history_context"]
+        retrieval_candidates = benchmark_views.get("retrieval_candidates") or build_fallback_windows(full_history_turns)
+
+    if not full_history_turns:
+        return []
+
+    query_text = build_query_text(input_data)
+    indexed_turns = {turn_signature(turn): index for index, turn in enumerate(full_history_turns)}
+
+    sessions: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
+    for turn in full_history_turns:
+        sessions[infer_session_key(turn)].append(turn)
+
+    session_items = list(sessions.items())
+    session_docs = [
+        "\n".join(render_turn_for_retrieval(turn) for turn in turns)
+        for _, turns in session_items
+    ]
+    session_scores = hybrid_rank(
+        query_text=query_text,
+        documents=session_docs,
+        sparse_weight=sparse_weight,
+        dense_weight=dense_weight,
+    )
+    top_session_keys = {
+        session_key
+        for (session_key, _), _score in sorted(
+            zip(session_items, session_scores),
+            key=lambda item: item[1],
+            reverse=True,
+        )[:session_top_k]
+    }
+
+    filtered_windows = [
+        window for window in retrieval_candidates
+        if window and infer_session_key(window[0]) in top_session_keys
+    ]
+    if not filtered_windows:
+        filtered_windows = list(retrieval_candidates)
+
+    window_docs = [
+        "\n".join(render_turn_for_retrieval(turn) for turn in window)
+        for window in filtered_windows
+    ]
+    window_scores = hybrid_rank(
+        query_text=query_text,
+        documents=window_docs,
+        sparse_weight=sparse_weight,
+        dense_weight=dense_weight,
+    )
+    top_windows = [
+        window
+        for window, _score in sorted(
+            zip(filtered_windows, window_scores),
+            key=lambda item: item[1],
+            reverse=True,
+        )[: max(window_top_k, final_window_top_k)]
+    ]
+
+    selected_windows = top_windows[:final_window_top_k]
+    selected_turns: Dict[Tuple[str, str, str], Dict[str, Any]] = {}
+    for window in selected_windows:
+        for turn in window:
+            selected_turns[turn_signature(turn)] = turn
+
+    return sorted(
+        selected_turns.values(),
+        key=lambda turn: indexed_turns.get(turn_signature(turn), 10**9),
+    )
 
 
 def render_options(options: List[str]) -> str:
@@ -179,7 +399,7 @@ def main() -> None:
     parser.add_argument("--dataset-name", required=True, help="Langfuse dataset name")
     parser.add_argument("--prompt-name", required=True, help="Langfuse prompt name")
     parser.add_argument("--prompt-label", default="production", help="Langfuse prompt label")
-    parser.add_argument("--context-policy", choices=["session_local", "full_history"], required=True)
+    parser.add_argument("--context-policy", choices=["session_local", "full_history", "gold_evidence", "hybrid_session_first", "full_history_plus_gold_evidence"], required=True)
     parser.add_argument("--api-profile-path", default=str(DEFAULT_API_PROFILE_PATH), help="JSON config path for model provider profiles")
     parser.add_argument("--task-profile", default=None, help="Task model profile name from the API profile config")
     parser.add_argument("--judge-profile", default=None, help="Judge model profile name from the API profile config")
@@ -197,6 +417,11 @@ def main() -> None:
     parser.add_argument("--experiment-name", default="emotion-memory-eval")
     parser.add_argument("--run-name", default=None)
     parser.add_argument("--report-path", default=None, help="Optional path to save a local text report")
+    parser.add_argument("--hybrid-session-top-k", type=int, default=2, help="Top-k sessions for hybrid_session_first retrieval")
+    parser.add_argument("--hybrid-window-top-k", type=int, default=2, help="Per-query window candidate budget for hybrid_session_first retrieval")
+    parser.add_argument("--hybrid-final-window-top-k", type=int, default=4, help="Final number of retrieved windows to merge for hybrid_session_first")
+    parser.add_argument("--hybrid-sparse-weight", type=float, default=0.5, help="Sparse score weight for hybrid retrieval")
+    parser.add_argument("--hybrid-dense-weight", type=float, default=0.5, help="Dense-style score weight for hybrid retrieval")
     args = parser.parse_args()
 
     langfuse = make_langfuse_client()
@@ -250,16 +475,53 @@ def main() -> None:
         benchmark_views = input_data["benchmark_views"]
         modality_views = benchmark_views.get("modality_conditioned_views")
 
-        if modality_views:
-            condition_payload = next(iter(modality_views.values()))
-            context_turns = condition_payload[f"{args.context_policy}_context"]
+        if args.context_policy == "hybrid_session_first":
+            context_turns = build_hybrid_session_first_context(
+                input_data=input_data,
+                benchmark_views=benchmark_views,
+                modality_views=modality_views,
+                session_top_k=args.hybrid_session_top_k,
+                window_top_k=args.hybrid_window_top_k,
+                final_window_top_k=args.hybrid_final_window_top_k,
+                sparse_weight=args.hybrid_sparse_weight,
+                dense_weight=args.hybrid_dense_weight,
+            )
+            context_transcript = render_context(context_turns)
+        elif args.context_policy == "full_history_plus_gold_evidence":
+            if modality_views:
+                condition_payload = next(iter(modality_views.values()))
+                full_history_turns = condition_payload["full_history_context"]
+                gold_evidence_turns = condition_payload.get("gold_evidence_context") or []
+            else:
+                full_history_turns = benchmark_views["full_history_context"]
+                gold_evidence_turns = benchmark_views.get("gold_evidence_context") or []
+
+            full_history_block = render_context(full_history_turns)
+            gold_evidence_block = render_context(gold_evidence_turns) if gold_evidence_turns else ""
+            if gold_evidence_block:
+                context_transcript = (
+                    "[Full Conversation History]\n"
+                    f"{full_history_block}\n\n"
+                    "[Highlighted Evidence]\n"
+                    f"{gold_evidence_block}"
+                )
+            else:
+                context_transcript = full_history_block
         else:
-            view_key = "session_local_context" if args.context_policy == "session_local" else "full_history_context"
-            context_turns = benchmark_views[view_key]
+            if modality_views:
+                condition_payload = next(iter(modality_views.values()))
+                context_turns = condition_payload[f"{args.context_policy}_context"]
+            else:
+                view_key = {
+                    "session_local": "session_local_context",
+                    "full_history": "full_history_context",
+                    "gold_evidence": "gold_evidence_context",
+                }[args.context_policy]
+                context_turns = benchmark_views[view_key]
+            context_transcript = render_context(context_turns)
 
         question_text = input_data["question_text"]
         options_block = render_options(input_data.get("options", []))
-        context_transcript = render_context(context_turns)
 
         messages = prompt.compile(
             question_text=question_text,

@@ -1,19 +1,19 @@
 {
-  "batch_name": "blueprint_review_s001",
-  "dataset_count": 1,
+  "batch_name": "blueprint_probe_multithread_5pack_20260409",
+  "dataset_count": 5,
   "llm": {
     "provider": "gateway",
-    "model": "@gemini/gemini-2.5-flash",
+    "model": "@gemini/gemini-3.1-pro-preview",
     "base_url": "https://api.portkey.ai/v1",
     "api_key_env": "GATEWAY_API_KEY"
   },
   "scenario_type": "psychological_teacher_student",
   "prompt_language": "en",
   "target_role": "student",
-  "sessions_per_conversation": 5,
-  "turns_per_conversation": 150,
-  "stage_count": 5,
-  "question_count": 24,
+  "sessions_per_conversation": 8,
+  "turns_per_conversation": 128,
+  "stage_count": 6,
+  "question_count": 40,
   "output_root": "data/generated_batches",
   "output_naming": {
     "append_timestamp": false,
@@ -21,12 +21,12 @@
   },
   "persona_selection": {
     "mode": "random_seeded",
-    "seed": 36
+    "seed": 2386
   },
   "blueprint_generation": {
     "enable_repair": true,
     "max_repair_attempts": 1,
-    "fixed_events_per_session": 3
+    "fixed_events_per_session": 4
   },
   "conversation_generation": {
     "mode": "single_agent"
