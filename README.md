@@ -130,9 +130,9 @@ Built-in evaluators: `exact_match` (for option questions) and `llm_judge` (for o
 ### Langfuse Engineering Notes
 
 - Dataset item ids must be globally unique across merged scenario files. Do not assume `conversation_id + question_id` is unique after combining scenarios.
-- [scripts/langfuse_upload_dataset.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/scripts/langfuse_upload_dataset.py) now builds collision-safe item ids from dataset name plus content-derived hashes and will raise an error before upload if duplicates remain.
+- `scripts/langfuse_upload_dataset.py` now builds collision-safe item ids from dataset name plus content-derived hashes and will raise an error before upload if duplicates remain.
 - Upload metadata now includes `unit_id`, `conversation_id`, `anchor_dia_id`, `source_units_file`, and `source_marker` so merged datasets can be traced back to source scenarios.
-- Local report based retry is part of the intended workflow. When provider-side failures happen, extract retry subsets with [scripts/langfuse_extract_retry_units.py](/C:/Users/chen4/Desktop/红熊/emotion_memory_benchmark_package/emotion_memory_benchmark_package_pure_text/scripts/langfuse_extract_retry_units.py), rerun only failed items, then merge main and retry reports at the item level.
+- Local report based retry is part of the intended workflow. When provider-side failures happen, extract retry subsets with `scripts/langfuse_extract_retry_units.py`, rerun only failed items, then merge main and retry reports at the item level.
 - In this repository, `unit_id` is not globally unique across merged scenarios, so report merging and retry extraction should prefer `question_text + anchor.text` matching when a run mixes multiple scenarios.
 
 ## Key Design Decisions
@@ -146,10 +146,10 @@ Built-in evaluators: `exact_match` (for option questions) and `llm_judge` (for o
 
 ## Documentation
 
-- [Methodology & Pipeline Design](docs/methodology_rationale_and_pipeline.md)
-- [Langfuse Evaluation Workflow](docs/langfuse_eval_workflow_zh.md)
-- [Multi-Agent Conversation Experiments](docs/multi_agent_conversation_experiments.md)
-- [Field Mapping Notes](docs/field_mapping_notes.md)
+- [Methodology & Pipeline Design](docs/design/methodology_rationale_and_pipeline.md)
+- [Multi-Agent Conversation Experiments](docs/design/multi_agent_conversation_experiments.md)
+- [Multi-Thread Blueprint Design](docs/design/multi_thread_blueprint_design_20260409.md)
+- [Field Mapping Notes](docs/design/field_mapping_notes.md)
 
 ## License
 
